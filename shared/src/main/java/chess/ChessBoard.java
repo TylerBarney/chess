@@ -10,13 +10,11 @@ import java.util.ArrayList;
  */
 public class ChessBoard {
 
-    //Arrays for uncapturedpieces and their positions
-    ArrayList<ChessPiece> unCapturedPieces;
-    ArrayList<ChessPosition> unCapturedPositions;
+    //Array of ChessPieces. Their position in the array is their position on the board
+    ChessPiece[][] unCapturedPieces;
     public ChessBoard() {
-        //intialize arrays on build
-        unCapturedPieces = new ArrayList<>();
-        unCapturedPositions = new ArrayList<>();
+        //intialize array on build
+        unCapturedPieces = new ChessPiece[8][8];
     }
 
     /**
@@ -26,9 +24,8 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        //add piece to board arrays
-        unCapturedPieces.add(piece);
-        unCapturedPositions.add(position);
+        //add piece to board array
+        unCapturedPieces[position.getRow()][position.getColumn()] = piece;
         //throw new RuntimeException("Not implemented");
     }
 
@@ -40,22 +37,8 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        //get index of piece in arrays
-        int positionRow = position.getRow();
-        int positionCol = position.getColumn();
-        int positionIndex;
-        for (positionIndex = 0; positionIndex < unCapturedPositions.size(); positionIndex++){
-            if (positionRow == unCapturedPositions.get(positionIndex).getRow()){
-                if (positionCol == unCapturedPositions.get(positionIndex).getColumn()) {
-                    System.out.println("Found it!");
-                    break;
-                }
-            }
-        }
-        //return piece based on index
-        if (positionIndex >= 0) return unCapturedPieces.get(positionIndex);
-        else return null;
-
+        //return piece in position
+        return unCapturedPieces[position.getRow()][position.getColumn()];
         //throw new RuntimeException("Not implemented");
     }
 

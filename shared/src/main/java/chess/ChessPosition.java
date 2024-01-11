@@ -8,12 +8,12 @@ package chess;
  */
 public class ChessPosition {
 
-    //not sure what the point of this class is
+
     int rowPosition;
     int colPosition;
     public ChessPosition(int row, int col) {
-        rowPosition = row; //??
-        colPosition = col; //??
+        rowPosition = row;
+        colPosition = col;
     }
 
     /**
@@ -22,7 +22,7 @@ public class ChessPosition {
      */
     public int getRow() {
 
-        return rowPosition; //should it return this??
+        return rowPosition;
         //throw new RuntimeException("Not implemented");
     }
 
@@ -31,7 +31,7 @@ public class ChessPosition {
      * 1 codes for the left row
      */
     public int getColumn() {
-        return colPosition; //not sure if this is what it should return
+        return colPosition;
         //throw new RuntimeException("Not implemented");
     }
 }
