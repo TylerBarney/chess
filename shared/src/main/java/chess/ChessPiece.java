@@ -72,6 +72,8 @@ public class ChessPiece {
             possibleMoves.addAll(this.rookMoves(myPosition, board));
         } else if (type == PieceType.KING){
             return this.kingMoves(myPosition, board);
+        } else if (type == PieceType.PAWN){
+            return this.pawnMoves(myPosition, board);
         }
         return possibleMoves;
         //throw new RuntimeException("Not implemented");
@@ -218,7 +220,6 @@ public class ChessPiece {
 
     public Collection<ChessMove> kingMoves(ChessPosition myPosition, ChessBoard board){
         HashSet<ChessMove> possibleMoves = new HashSet<>();
-        Set<Integer> values = Set.of(0,9);
         ChessPosition endPosition;
 
         //up
@@ -287,4 +288,59 @@ public class ChessPiece {
         }
         return possibleMoves;
     }
+
+    //pawn moves
+    public Collection<ChessMove> pawnMoves(ChessPosition myPosition, ChessBoard board){
+        HashSet<ChessMove> possibleMoves = new HashSet<>();
+        ChessPosition endPosition;
+
+        //move forward if no obstructing piece
+        if (this.pieceColor == ChessGame.TeamColor.WHITE){
+            endPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn());
+            if (board.isPlaceEmpty(endPosition)) {
+                if (!checkPromotion(endPosition)){
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                } else {
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, this.type));
+                }
+            }
+        } else {
+            endPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn());
+            if (board.isPlaceEmpty(endPosition)) {
+                if (!checkPromotion(endPosition)){
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                } else {
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, this.type));
+                }
+            }
+        }
+
+        //capture top right piece
+        endPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 1);
+        if (!board.isPlaceEmpty(endPosition) && this.canTakePiece(endPosition, board)){
+            if (!checkPromotion(endPosition)){
+                possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+            } else {
+                possibleMoves.add(new ChessMove(myPosition, endPosition, this.type));
+            }
+        }
+
+        //capture top left piece
+        endPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1);
+        if (!board.isPlaceEmpty(endPosition) && this.canTakePiece(endPosition, board)){
+            if (!checkPromotion(endPosition)){
+                possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+            } else {
+                possibleMoves.add(new ChessMove(myPosition, endPosition, this.type));
+            }
+        }
+
+        return possibleMoves;
+    }
+
+    public boolean checkPromotion(ChessPosition endPosition){
+
+        return false;
+    }
+
 }
