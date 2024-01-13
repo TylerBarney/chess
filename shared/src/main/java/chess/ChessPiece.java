@@ -63,123 +63,15 @@ public class ChessPiece {
 
         //checks piece type and returns possible moves
         if (type == PieceType.BISHOP) {
-            int i = 1;
-            //iterate through each space in the top right direction and checks for valid moves
-            while (!values.contains(myPosition.getRow() + i) && !values.contains(myPosition.getColumn() + i)) {
-                endPosition = new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() + i);
-                //if space is empty add to list
-                if (board.isPlaceEmpty(endPosition)) {
-                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
-                    i++;
-                } else{
-                    //checks if piece can be captured
-                    if (this.canTakePiece(endPosition, board)){
-                        possibleMoves.add(new ChessMove(myPosition, endPosition, null));
-                        break;
-                    } else break; //stops checking further that direction
-                }
-            }
-            i = 1;
-            //iterate through each space in the top left direction and checks for valid moves
-            while (!values.contains(myPosition.getRow() + i) && !values.contains(myPosition.getColumn() - i)) {
-                endPosition = new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() - i);
-                if (board.isPlaceEmpty(endPosition)) {
-                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
-                    i++;
-                } else{
-                    if (this.canTakePiece(endPosition, board)){
-                        possibleMoves.add(new ChessMove(myPosition, endPosition, null));
-                        break;
-                    } else break;
-                }
-            }
-            i = 1;
-            //iterate through each space in the bottom right direction and checks for valid moves
-            while (!values.contains(myPosition.getRow() - i) && !values.contains(myPosition.getColumn() + i)) {
-                endPosition = new ChessPosition(myPosition.getRow() - i, myPosition.getColumn() + i);
-                if (board.isPlaceEmpty(endPosition)) {
-                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
-                    i++;
-                } else{
-                    if (this.canTakePiece(endPosition, board)){
-                        possibleMoves.add(new ChessMove(myPosition, endPosition, null));
-                        break;
-                    } else break;
-                }
-            }
-            i = 1;
-            //iterate through each space in the bottom left direction and checks for valid moves
-            while (!values.contains(myPosition.getRow() - i) && !values.contains(myPosition.getColumn() - i)) {
-                endPosition = new ChessPosition(myPosition.getRow() - i, myPosition.getColumn() - i);
-                if (board.isPlaceEmpty(endPosition)) {
-                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
-                    i++;
-                } else{
-                    if (this.canTakePiece(endPosition, board)){
-                        possibleMoves.add(new ChessMove(myPosition, endPosition, null));
-                        break;
-                    } else break;
-                }
-            }
+            return this.bishopMoves(myPosition, board);
         } else if (type == PieceType.ROOK){
-            int i = 1;
-            //iterate through each space in the up direction and checks for valid moves
-            while (!values.contains(myPosition.getRow() + i)) {
-                endPosition = new ChessPosition(myPosition.getRow() + i, myPosition.getColumn());
-                //if space is empty add to list
-                if (board.isPlaceEmpty(endPosition)) {
-                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
-                    i++;
-                } else{
-                    //checks if piece can be captured
-                    if (this.canTakePiece(endPosition, board)){
-                        possibleMoves.add(new ChessMove(myPosition, endPosition, null));
-                        break;
-                    } else break; //stops checking further that direction
-                }
-            }
-            i = 1;
-            //iterate through each space in the down direction and checks for valid moves
-            while (!values.contains(myPosition.getRow() - i)) {
-                endPosition = new ChessPosition(myPosition.getRow() - i, myPosition.getColumn());
-                if (board.isPlaceEmpty(endPosition)) {
-                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
-                    i++;
-                } else{
-                    if (this.canTakePiece(endPosition, board)){
-                        possibleMoves.add(new ChessMove(myPosition, endPosition, null));
-                        break;
-                    } else break;
-                }
-            }
-            i = 1;
-            //iterate through each space in the right direction and checks for valid moves
-            while (!values.contains(myPosition.getColumn() + i)) {
-                endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn() + i);
-                if (board.isPlaceEmpty(endPosition)) {
-                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
-                    i++;
-                } else{
-                    if (this.canTakePiece(endPosition, board)){
-                        possibleMoves.add(new ChessMove(myPosition, endPosition, null));
-                        break;
-                    } else break;
-                }
-            }
-            i = 1;
-            //iterate through each space in the left direction and checks for valid moves
-            while (!values.contains(myPosition.getColumn() - i)) {
-                endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn() - i);
-                if (board.isPlaceEmpty(endPosition)) {
-                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
-                    i++;
-                } else{
-                    if (this.canTakePiece(endPosition, board)){
-                        possibleMoves.add(new ChessMove(myPosition, endPosition, null));
-                        break;
-                    } else break;
-                }
-            }
+            return this.rookMoves(myPosition, board);
+        } else if (type == PieceType.QUEEN){
+            //Queen can move like both a rook and bishop
+            possibleMoves.addAll(this.bishopMoves(myPosition, board));
+            possibleMoves.addAll(this.rookMoves(myPosition, board));
+        } else if (type == PieceType.KING){
+            return this.kingMoves(myPosition, board);
         }
         return possibleMoves;
         //throw new RuntimeException("Not implemented");
@@ -191,5 +83,208 @@ public class ChessPiece {
         if (board.getPiece(endPosition) != null && board.getPiece(endPosition).getTeamColor() == this.pieceColor) return false;
         if (board.getPiece(endPosition) != null && board.getPiece(endPosition).getTeamColor() != this.pieceColor) return true;
         return true;
+    }
+
+    //calculates bishop moves
+    public Collection<ChessMove> bishopMoves(ChessPosition myPosition, ChessBoard board){
+        int i = 1;
+        HashSet<ChessMove> possibleMoves = new HashSet<>();
+        Set<Integer> values = Set.of(0,9);
+        ChessPosition endPosition;
+        //iterate through each space in the top right direction and checks for valid moves
+        while (!values.contains(myPosition.getRow() + i) && !values.contains(myPosition.getColumn() + i)) {
+            endPosition = new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() + i);
+            //if space is empty add to list
+            if (board.isPlaceEmpty(endPosition)) {
+                possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                i++;
+            } else{
+                //checks if piece can be captured
+                if (this.canTakePiece(endPosition, board)){
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                    break;
+                } else break; //stops checking further that direction
+            }
+        }
+        i = 1;
+        //iterate through each space in the top left direction and checks for valid moves
+        while (!values.contains(myPosition.getRow() + i) && !values.contains(myPosition.getColumn() - i)) {
+            endPosition = new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() - i);
+            if (board.isPlaceEmpty(endPosition)) {
+                possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                i++;
+            } else{
+                if (this.canTakePiece(endPosition, board)){
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                    break;
+                } else break;
+            }
+        }
+        i = 1;
+        //iterate through each space in the bottom right direction and checks for valid moves
+        while (!values.contains(myPosition.getRow() - i) && !values.contains(myPosition.getColumn() + i)) {
+            endPosition = new ChessPosition(myPosition.getRow() - i, myPosition.getColumn() + i);
+            if (board.isPlaceEmpty(endPosition)) {
+                possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                i++;
+            } else{
+                if (this.canTakePiece(endPosition, board)){
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                    break;
+                } else break;
+            }
+        }
+        i = 1;
+        //iterate through each space in the bottom left direction and checks for valid moves
+        while (!values.contains(myPosition.getRow() - i) && !values.contains(myPosition.getColumn() - i)) {
+            endPosition = new ChessPosition(myPosition.getRow() - i, myPosition.getColumn() - i);
+            if (board.isPlaceEmpty(endPosition)) {
+                possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                i++;
+            } else{
+                if (this.canTakePiece(endPosition, board)){
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                    break;
+                } else break;
+            }
+        }
+        return possibleMoves;
+    }
+
+    public Collection<ChessMove> rookMoves(ChessPosition myPosition, ChessBoard board){
+        int i = 1;
+        HashSet<ChessMove> possibleMoves = new HashSet<>();
+        Set<Integer> values = Set.of(0,9);
+        ChessPosition endPosition;
+        //iterate through each space in the up direction and checks for valid moves
+        while (!values.contains(myPosition.getRow() + i)) {
+            endPosition = new ChessPosition(myPosition.getRow() + i, myPosition.getColumn());
+            //if space is empty add to list
+            if (board.isPlaceEmpty(endPosition)) {
+                possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                i++;
+            } else{
+                //checks if piece can be captured
+                if (this.canTakePiece(endPosition, board)){
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                    break;
+                } else break; //stops checking further that direction
+            }
+        }
+        i = 1;
+        //iterate through each space in the down direction and checks for valid moves
+        while (!values.contains(myPosition.getRow() - i)) {
+            endPosition = new ChessPosition(myPosition.getRow() - i, myPosition.getColumn());
+            if (board.isPlaceEmpty(endPosition)) {
+                possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                i++;
+            } else{
+                if (this.canTakePiece(endPosition, board)){
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                    break;
+                } else break;
+            }
+        }
+        i = 1;
+        //iterate through each space in the right direction and checks for valid moves
+        while (!values.contains(myPosition.getColumn() + i)) {
+            endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn() + i);
+            if (board.isPlaceEmpty(endPosition)) {
+                possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                i++;
+            } else{
+                if (this.canTakePiece(endPosition, board)){
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                    break;
+                } else break;
+            }
+        }
+        i = 1;
+        //iterate through each space in the left direction and checks for valid moves
+        while (!values.contains(myPosition.getColumn() - i)) {
+            endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn() - i);
+            if (board.isPlaceEmpty(endPosition)) {
+                possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                i++;
+            } else{
+                if (this.canTakePiece(endPosition, board)){
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                    break;
+                } else break;
+            }
+        }
+        return possibleMoves;
+    }
+
+    public Collection<ChessMove> kingMoves(ChessPosition myPosition, ChessBoard board){
+        HashSet<ChessMove> possibleMoves = new HashSet<>();
+        Set<Integer> values = Set.of(0,9);
+        ChessPosition endPosition;
+
+        //up
+        if (myPosition.getRow() != 8){
+            endPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn());
+            if (board.isPlaceEmpty(endPosition)) possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+            else{
+                if (this.canTakePiece(endPosition, board)) possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+            }
+        }
+        //down
+        if (myPosition.getRow() != 1){
+            endPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn());
+            if (board.isPlaceEmpty(endPosition)) possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+            else{
+                if (this.canTakePiece(endPosition, board)) possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+            }
+        }
+        //left
+        if (myPosition.getColumn() != 1){
+            endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn() - 1);
+            if (board.isPlaceEmpty(endPosition)) possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+            else{
+                if (this.canTakePiece(endPosition, board)) possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+            }
+        }
+        //right
+        if (myPosition.getColumn() != 8){
+            endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn() + 1);
+            if (board.isPlaceEmpty(endPosition)) possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+            else{
+                if (this.canTakePiece(endPosition, board)) possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+            }
+        }
+        //up -right
+        if (myPosition.getRow() != 8 && myPosition.getColumn() != 8){
+            endPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 1);
+            if (board.isPlaceEmpty(endPosition)) possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+            else{
+                if (this.canTakePiece(endPosition, board)) possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+            }
+        }
+        //up-left
+        if (myPosition.getRow() != 8 && myPosition.getColumn() != 1){
+            endPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1);
+            if (board.isPlaceEmpty(endPosition)) possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+            else{
+                if (this.canTakePiece(endPosition, board)) possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+            }
+        }
+        //down-right
+        if (myPosition.getRow() != 1 && myPosition.getColumn() != 8){
+            endPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1);
+            if (board.isPlaceEmpty(endPosition)) possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+            else{
+                if (this.canTakePiece(endPosition, board)) possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+            }
+        }
+        //down-left
+        if (myPosition.getRow() != 1 && myPosition.getColumn() != 1){
+            endPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 1);
+            if (board.isPlaceEmpty(endPosition)) possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+            else{
+                if (this.canTakePiece(endPosition, board)) possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+            }
+        }
+        return possibleMoves;
     }
 }
