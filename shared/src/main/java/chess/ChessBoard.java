@@ -25,7 +25,7 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         //add piece to board array
-        unCapturedPieces[position.getRow()][position.getColumn()] = piece;
+        unCapturedPieces[position.getRow()-1][position.getColumn()-1] = piece;
         //throw new RuntimeException("Not implemented");
     }
 
@@ -38,7 +38,7 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         //return piece in position
-        return unCapturedPieces[position.getRow()][position.getColumn()];
+        return unCapturedPieces[position.getRow()-1][position.getColumn()-1];
         //throw new RuntimeException("Not implemented");
     }
 
@@ -50,5 +50,11 @@ public class ChessBoard {
 
 
         throw new RuntimeException("Not implemented");
+    }
+
+    //checks if position is empty
+    public boolean isPlaceEmpty(ChessPosition endPosition){
+        if (this.getPiece(endPosition) == null) return true;
+        return false;
     }
 }
