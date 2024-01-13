@@ -122,7 +122,64 @@ public class ChessPiece {
                 }
             }
         } else if (type == PieceType.ROOK){
-
+            int i = 1;
+            //iterate through each space in the up direction and checks for valid moves
+            while (!values.contains(myPosition.getRow() + i)) {
+                endPosition = new ChessPosition(myPosition.getRow() + i, myPosition.getColumn());
+                //if space is empty add to list
+                if (board.isPlaceEmpty(endPosition)) {
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                    i++;
+                } else{
+                    //checks if piece can be captured
+                    if (this.canTakePiece(endPosition, board)){
+                        possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                        break;
+                    } else break; //stops checking further that direction
+                }
+            }
+            i = 1;
+            //iterate through each space in the down direction and checks for valid moves
+            while (!values.contains(myPosition.getRow() - i)) {
+                endPosition = new ChessPosition(myPosition.getRow() - i, myPosition.getColumn());
+                if (board.isPlaceEmpty(endPosition)) {
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                    i++;
+                } else{
+                    if (this.canTakePiece(endPosition, board)){
+                        possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                        break;
+                    } else break;
+                }
+            }
+            i = 1;
+            //iterate through each space in the right direction and checks for valid moves
+            while (!values.contains(myPosition.getColumn() + i)) {
+                endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn() + i);
+                if (board.isPlaceEmpty(endPosition)) {
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                    i++;
+                } else{
+                    if (this.canTakePiece(endPosition, board)){
+                        possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                        break;
+                    } else break;
+                }
+            }
+            i = 1;
+            //iterate through each space in the left direction and checks for valid moves
+            while (!values.contains(myPosition.getColumn() - i)) {
+                endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn() - i);
+                if (board.isPlaceEmpty(endPosition)) {
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                    i++;
+                } else{
+                    if (this.canTakePiece(endPosition, board)){
+                        possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                        break;
+                    } else break;
+                }
+            }
         }
         return possibleMoves;
         //throw new RuntimeException("Not implemented");
