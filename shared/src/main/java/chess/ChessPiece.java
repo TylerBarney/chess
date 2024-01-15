@@ -1,5 +1,6 @@
 package chess;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -74,6 +75,8 @@ public class ChessPiece {
             return this.kingMoves(myPosition, board);
         } else if (type == PieceType.PAWN){
             return this.pawnMoves(myPosition, board);
+        } else if (type == PieceType.KNIGHT){
+            return this.knightMoves(myPosition, board);
         }
         return possibleMoves;
         //throw new RuntimeException("Not implemented");
@@ -365,6 +368,44 @@ public class ChessPiece {
     public boolean checkPromotion(ChessPosition endPosition){
 
         return false;
+    }
+
+    public Collection<ChessMove> knightMoves(ChessPosition myPosition, ChessBoard board){
+        //one up two right
+
+        //one up two left
+
+        //down one two right
+
+        //one down two left
+
+        //two up one left
+
+        //two up one right
+
+        //two down one left
+
+        //two down one right
+
+        int[][] moveSet = { {1,2}, {1,-2}, {-1,2}, {-1, -2}, {2, -1}, {2, 1}, {-2, -1}, {-2, 1}};
+        HashSet<ChessMove> possibleMoves = new HashSet<>();
+        ChessPosition endPosition;
+        for (int i = 0; i < moveSet.length; i++){
+            endPosition = new ChessPosition(myPosition.getRow() + moveSet[i][0], myPosition.getColumn()  + moveSet[i][1]);
+            if (this.inBounds(endPosition)){
+                if (board.isPlaceEmpty(endPosition)) possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                else if (board.getPiece(endPosition).getTeamColor() != this.pieceColor){
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                }
+            }
+        }
+        return possibleMoves;
+    }
+
+    public boolean inBounds(ChessPosition position){
+        if (position.getRow() <= 0 || position.getRow() >= 9) return false;
+        else if (position.getColumn() <= 0 || position.getColumn() >= 9) return false;
+        return true;
     }
 
 }
