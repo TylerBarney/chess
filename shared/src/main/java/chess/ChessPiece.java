@@ -304,6 +304,18 @@ public class ChessPiece {
                     possibleMoves.add(new ChessMove(myPosition, endPosition, this.type));
                 }
             }
+            //checks for initial move, moving 2 spaces forward
+            if (myPosition.getRow() == 2){
+                ChessPosition doubleEndPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn());
+                endPosition = new ChessPosition(myPosition.getRow() + 2, myPosition.getColumn());
+                if (board.isPlaceEmpty(endPosition) && board.isPlaceEmpty(doubleEndPosition)) {
+                    if (!checkPromotion(endPosition)){
+                        possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                    } else {
+                        possibleMoves.add(new ChessMove(myPosition, endPosition, this.type));
+                    }
+                }
+            }
         } else {
             endPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn());
             if (board.isPlaceEmpty(endPosition)) {
@@ -313,10 +325,22 @@ public class ChessPiece {
                     possibleMoves.add(new ChessMove(myPosition, endPosition, this.type));
                 }
             }
+            //checks if its in starting place and can move 2 forward
+            if (myPosition.getRow() == 7){
+                ChessPosition doubleEndPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn());
+                endPosition = new ChessPosition(myPosition.getRow() - 2, myPosition.getColumn());
+                if (board.isPlaceEmpty(endPosition) && board.isPlaceEmpty(doubleEndPosition)) {
+                    if (!checkPromotion(endPosition)){
+                        possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                    } else {
+                        possibleMoves.add(new ChessMove(myPosition, endPosition, this.type));
+                    }
+                }
+            }
         }
 
         //capture top right piece
-        endPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 1);
+        endPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1);
         if (!board.isPlaceEmpty(endPosition) && this.canTakePiece(endPosition, board)){
             if (!checkPromotion(endPosition)){
                 possibleMoves.add(new ChessMove(myPosition, endPosition, null));
