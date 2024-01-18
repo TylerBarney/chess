@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -48,13 +49,64 @@ public class ChessBoard {
      */
     public void resetBoard() {
 
+        //white side
+        //this.addPiece(new ChessPosition(1,1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
+        unCapturedPieces[0][0] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
+        unCapturedPieces[0][1] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
+        unCapturedPieces[0][2] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
+        unCapturedPieces[0][3] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
+        unCapturedPieces[0][4] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
+        unCapturedPieces[0][5] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
+        unCapturedPieces[0][6] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
+        unCapturedPieces[0][7] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
+        for (int i = 0; i < unCapturedPieces[0].length; i++){
+            unCapturedPieces[1][i] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+        }
 
-        throw new RuntimeException("Not implemented");
+        //black side
+        unCapturedPieces[7][0] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
+        unCapturedPieces[7][1] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
+        unCapturedPieces[7][2] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+        unCapturedPieces[7][3] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
+        unCapturedPieces[7][4] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
+        unCapturedPieces[7][5] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+        unCapturedPieces[7][6] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
+        unCapturedPieces[7][7] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
+        for (int i = 0; i < unCapturedPieces[0].length; i++){
+            unCapturedPieces[6][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+        }
+
+        for (int i = 0; i < unCapturedPieces.length; i++){
+            for (int j = 0; j < unCapturedPieces.length; j++){
+                if (unCapturedPieces[i][j] != null) System.out.println(unCapturedPieces[i][j].toString() + i +", " + j);
+            }
+        }
+        //throw new RuntimeException("Not implemented");
     }
 
     //checks if position is empty
     public boolean isPlaceEmpty(ChessPosition endPosition){
         if (this.getPiece(endPosition) == null) return true;
         return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessBoard that = (ChessBoard) o;
+        return Arrays.deepEquals(unCapturedPieces, that.unCapturedPieces);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(unCapturedPieces);
+    }
+
+    @Override
+    public String toString() {
+        return "ChessBoard{" +
+                "unCapturedPieces=" + Arrays.toString(unCapturedPieces) +
+                '}';
     }
 }
