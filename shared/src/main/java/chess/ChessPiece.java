@@ -3,6 +3,9 @@ package chess;
 import java.lang.reflect.Array;
 import java.util.*;
 
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
+
 /**
  * Represents a single chess piece
  * <p>
@@ -295,13 +298,16 @@ public class ChessPiece {
         ChessPosition endPosition;
 
         //move forward if no obstructing piece
-        if (this.pieceColor == ChessGame.TeamColor.WHITE){
+        if (this.pieceColor == WHITE){
             endPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn());
             if (board.isPlaceEmpty(endPosition)) {
-                if (!checkPromotion(endPosition)){
+                if (!checkPromotion(endPosition, this.pieceColor)){
                     possibleMoves.add(new ChessMove(myPosition, endPosition, null));
                 } else {
-                    possibleMoves.add(new ChessMove(myPosition, endPosition, this.type));
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.QUEEN));
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.BISHOP));
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.ROOK));
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.KNIGHT));
                 }
             }
             //checks for initial move, moving 2 spaces forward
@@ -309,20 +315,26 @@ public class ChessPiece {
                 ChessPosition doubleEndPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn());
                 endPosition = new ChessPosition(myPosition.getRow() + 2, myPosition.getColumn());
                 if (board.isPlaceEmpty(endPosition) && board.isPlaceEmpty(doubleEndPosition)) {
-                    if (!checkPromotion(endPosition)){
+                    if (!checkPromotion(endPosition, this.pieceColor)){
                         possibleMoves.add(new ChessMove(myPosition, endPosition, null));
                     } else {
-                        possibleMoves.add(new ChessMove(myPosition, endPosition, this.type));
+                        possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.QUEEN));
+                        possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.BISHOP));
+                        possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.ROOK));
+                        possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.KNIGHT));
                     }
                 }
             }
         } else {
             endPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn());
             if (board.isPlaceEmpty(endPosition)) {
-                if (!checkPromotion(endPosition)){
+                if (!checkPromotion(endPosition, this.pieceColor)){
                     possibleMoves.add(new ChessMove(myPosition, endPosition, null));
                 } else {
-                    possibleMoves.add(new ChessMove(myPosition, endPosition, this.type));
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.QUEEN));
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.BISHOP));
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.ROOK));
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.KNIGHT));
                 }
             }
             //checks if its in starting place and can move 2 forward
@@ -330,10 +342,13 @@ public class ChessPiece {
                 ChessPosition doubleEndPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn());
                 endPosition = new ChessPosition(myPosition.getRow() - 2, myPosition.getColumn());
                 if (board.isPlaceEmpty(endPosition) && board.isPlaceEmpty(doubleEndPosition)) {
-                    if (!checkPromotion(endPosition)){
+                    if (!checkPromotion(endPosition, this.pieceColor)){
                         possibleMoves.add(new ChessMove(myPosition, endPosition, null));
                     } else {
-                        possibleMoves.add(new ChessMove(myPosition, endPosition, this.type));
+                        possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.QUEEN));
+                        possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.BISHOP));
+                        possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.ROOK));
+                        possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.KNIGHT));
                     }
                 }
             }
@@ -342,28 +357,39 @@ public class ChessPiece {
         //capture top right piece
         endPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1);
         if (!board.isPlaceEmpty(endPosition) && this.canTakePiece(endPosition, board)){
-            if (!checkPromotion(endPosition)){
+            if (!checkPromotion(endPosition, this.pieceColor)){
                 possibleMoves.add(new ChessMove(myPosition, endPosition, null));
             } else {
-                possibleMoves.add(new ChessMove(myPosition, endPosition, this.type));
+                possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.QUEEN));
+                possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.BISHOP));
+                possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.ROOK));
+                possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.KNIGHT));
             }
         }
 
         //capture top left piece
         endPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1);
         if (!board.isPlaceEmpty(endPosition) && this.canTakePiece(endPosition, board)){
-            if (!checkPromotion(endPosition)){
+            if (!checkPromotion(endPosition, this.pieceColor)){
                 possibleMoves.add(new ChessMove(myPosition, endPosition, null));
             } else {
-                possibleMoves.add(new ChessMove(myPosition, endPosition, this.type));
+                possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.QUEEN));
+                possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.BISHOP));
+                possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.ROOK));
+                possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.KNIGHT));
             }
         }
 
         return possibleMoves;
     }
 
-    public boolean checkPromotion(ChessPosition endPosition){
-
+    public boolean checkPromotion(ChessPosition endPosition, ChessGame.TeamColor color){
+        if (color == WHITE && endPosition.getRow() == 8){
+            return true;
+        }
+        if (color == BLACK && endPosition.getRow() == 1){
+            return true;
+        }
         return false;
     }
 
