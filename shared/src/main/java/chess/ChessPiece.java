@@ -315,14 +315,7 @@ public class ChessPiece {
                 ChessPosition doubleEndPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn());
                 endPosition = new ChessPosition(myPosition.getRow() + 2, myPosition.getColumn());
                 if (board.isPlaceEmpty(endPosition) && board.isPlaceEmpty(doubleEndPosition)) {
-                    if (!checkPromotion(endPosition, this.pieceColor)){
-                        possibleMoves.add(new ChessMove(myPosition, endPosition, null));
-                    } else {
-                        possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.QUEEN));
-                        possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.BISHOP));
-                        possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.ROOK));
-                        possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.KNIGHT));
-                    }
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
                 }
             }
         } else {
@@ -342,41 +335,62 @@ public class ChessPiece {
                 ChessPosition doubleEndPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn());
                 endPosition = new ChessPosition(myPosition.getRow() - 2, myPosition.getColumn());
                 if (board.isPlaceEmpty(endPosition) && board.isPlaceEmpty(doubleEndPosition)) {
-                    if (!checkPromotion(endPosition, this.pieceColor)){
-                        possibleMoves.add(new ChessMove(myPosition, endPosition, null));
-                    } else {
-                        possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.QUEEN));
-                        possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.BISHOP));
-                        possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.ROOK));
-                        possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.KNIGHT));
-                    }
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
                 }
             }
         }
 
         //capture top right piece
-        endPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1);
-        if (!board.isPlaceEmpty(endPosition) && this.canTakePiece(endPosition, board)){
-            if (!checkPromotion(endPosition, this.pieceColor)){
-                possibleMoves.add(new ChessMove(myPosition, endPosition, null));
-            } else {
-                possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.QUEEN));
-                possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.BISHOP));
-                possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.ROOK));
-                possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.KNIGHT));
+        if (this.pieceColor == WHITE){
+            endPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 1);
+            if (!board.isPlaceEmpty(endPosition) && this.canTakePiece(endPosition, board)){
+                if (!checkPromotion(endPosition, this.pieceColor)){
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                } else {
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.QUEEN));
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.BISHOP));
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.ROOK));
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.KNIGHT));
+                }
+            }
+        } else {
+            endPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 1);
+            if (!board.isPlaceEmpty(endPosition) && this.canTakePiece(endPosition, board)){
+                if (!checkPromotion(endPosition, this.pieceColor)){
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                } else {
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.QUEEN));
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.BISHOP));
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.ROOK));
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.KNIGHT));
+                }
             }
         }
 
         //capture top left piece
-        endPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1);
-        if (!board.isPlaceEmpty(endPosition) && this.canTakePiece(endPosition, board)){
-            if (!checkPromotion(endPosition, this.pieceColor)){
-                possibleMoves.add(new ChessMove(myPosition, endPosition, null));
-            } else {
-                possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.QUEEN));
-                possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.BISHOP));
-                possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.ROOK));
-                possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.KNIGHT));
+        if (this.pieceColor == WHITE){
+            endPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1);
+            if (!board.isPlaceEmpty(endPosition) && this.canTakePiece(endPosition, board)){
+                if (!checkPromotion(endPosition, this.pieceColor)){
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                } else {
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.QUEEN));
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.BISHOP));
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.ROOK));
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.KNIGHT));
+                }
+            }
+        } else {
+            endPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1);
+            if (!board.isPlaceEmpty(endPosition) && this.canTakePiece(endPosition, board)){
+                if (!checkPromotion(endPosition, this.pieceColor)){
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, null));
+                } else {
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.QUEEN));
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.BISHOP));
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.ROOK));
+                    possibleMoves.add(new ChessMove(myPosition, endPosition, PieceType.KNIGHT));
+                }
             }
         }
 
