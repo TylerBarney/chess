@@ -75,12 +75,6 @@ public class ChessBoard {
         for (int i = 0; i < unCapturedPieces[0].length; i++){
             unCapturedPieces[6][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
         }
-
-        for (int i = 0; i < unCapturedPieces.length; i++){
-            for (int j = 0; j < unCapturedPieces.length; j++){
-                if (unCapturedPieces[i][j] != null) System.out.println(unCapturedPieces[i][j].toString() + i +", " + j);
-            }
-        }
         //throw new RuntimeException("Not implemented");
     }
 
