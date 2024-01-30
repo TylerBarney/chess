@@ -84,6 +84,19 @@ public class ChessBoard {
         return false;
     }
 
+    public ChessBoard copy() {
+        ChessBoard copyBoard = new ChessBoard();
+        for (int i = 0; i < this.unCapturedPieces.length; i++){
+            for (int j = 0; j < this.unCapturedPieces.length; j++){
+                if (unCapturedPieces[i][j] != null){
+                    copyBoard.unCapturedPieces[i][j] = unCapturedPieces[i][j].copy();
+                }
+
+            }
+        }
+        return copyBoard;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -99,8 +112,18 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        return "ChessBoard{" +
-                "unCapturedPieces=" + Arrays.toString(unCapturedPieces) +
-                '}';
+        String outString = "ChessBoard{";
+        for (int i = 0; i < unCapturedPieces.length; i++){
+            for (int j = 0; j < unCapturedPieces.length; j++){
+                if (unCapturedPieces[i][j] != null) {
+                    outString = outString + "Position " + i + ", " + j + " ";
+                    outString = outString + unCapturedPieces[i][j].toString() + "\n";
+                }
+            }
+        }
+        return outString;
+//        return "ChessBoard{" +
+//                "unCapturedPieces=" + Arrays.toString(unCapturedPieces) +
+//                '}';
     }
 }

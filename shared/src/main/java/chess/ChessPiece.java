@@ -78,6 +78,9 @@ public class ChessPiece {
         return possibleMoves;
         //throw new RuntimeException("Not implemented");
     }
+    public ChessPiece copy(){
+        return new ChessPiece(this.pieceColor, this.type);
+    }
 
     @Override
     public boolean equals(Object o) {

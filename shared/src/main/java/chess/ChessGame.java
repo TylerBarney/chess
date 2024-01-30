@@ -68,6 +68,7 @@ public class ChessGame {
         board.addPiece(endPosition, piece);
         //empty starting position
         board.addPiece(startingPosition, null);
+
     }
 
     /**
@@ -77,7 +78,9 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        ChessBoard copyBoard = this.board.copy();
+
+        return true;
     }
 
     /**
