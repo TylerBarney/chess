@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -95,6 +96,20 @@ public class ChessBoard {
             }
         }
         return copyBoard;
+    }
+
+    //searches board for a piece. Returns position or null
+    public ChessPosition searchBoardFor(ChessPiece piece){
+        ChessPosition iteratorPosition;
+        ChessPiece currentPiece;
+        for (int i = 1; i < 9; i++){
+            for (int j = 1; j < 9; j++){
+                iteratorPosition = new ChessPosition(i, j);
+                currentPiece = this.getPiece(iteratorPosition);
+                if (currentPiece != null && currentPiece.equals(piece)) return iteratorPosition;
+            }
+        }
+        return null;
     }
 
     @Override

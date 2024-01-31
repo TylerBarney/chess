@@ -73,6 +73,17 @@ public class ChessGame {
 
     }
 
+    public void makeMove(ChessMove move, ChessBoard board) {
+        ChessPosition startingPosition = move.getStartPosition();
+        ChessPosition endPosition = move.getEndPosition();
+        ChessPiece piece = board.getPiece(startingPosition);
+        //move piece
+        board.addPiece(endPosition, piece);
+        //empty starting position
+        board.addPiece(startingPosition, null);
+
+    }
+
     /**
      * Determines if the given team is in check
      *
@@ -80,24 +91,10 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        ChessPosition iteratorPosition;
-        HashSet<ChessMove> enemyMoves = new HashSet<>();
-        ChessPiece currentPiece;
-        ChessPosition kingPosition = null;
 
         //get enemy moves and team king position
-        for (int i = 1; i < 9; i++){
-            for (int j = 1; j < 9; j++){
-                iteratorPosition = new ChessPosition(i, j);
-                currentPiece = board.getPiece(iteratorPosition);
-                if (currentPiece != null && currentPiece.pieceColor != teamColor){
-                    enemyMoves.addAll(currentPiece.pieceMoves(board, iteratorPosition));
-                } else if (currentPiece != null && currentPiece.getPieceType() == ChessPiece.PieceType.KING && currentPiece.getTeamColor() == teamColor ){
-                    kingPosition = iteratorPosition;
-                }
-
-            }
-        }
+        HashSet<ChessMove> enemyMoves = getEnemyMoves(teamColor, board);
+        ChessPosition kingPosition = board.searchBoardFor(new ChessPiece(teamColor, ChessPiece.PieceType.KING));
 
         //check if teamColor King is in any endposition
         Iterator<ChessMove> iter = enemyMoves.iterator();
@@ -110,14 +107,68 @@ public class ChessGame {
         return false;
     }
 
+    //variation of isInCheck method with board parameter
+    public boolean isInCheck(TeamColor teamColor, ChessBoard board) {
+
+        //get enemy moves and team king position
+        HashSet<ChessMove> enemyMoves = getEnemyMoves(teamColor, board);
+        ChessPosition kingPosition = board.searchBoardFor(new ChessPiece(teamColor, ChessPiece.PieceType.KING));
+
+        //check if teamColor King is in any endposition
+        Iterator<ChessMove> iter = enemyMoves.iterator();
+
+        while (iter.hasNext()){
+            if (iter.next().getEndPosition().equals(kingPosition)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //Gets all enemy moves and stores in HashSet
+    private HashSet<ChessMove> getEnemyMoves(TeamColor teamColor, ChessBoard board){
+        ChessPosition iteratorPosition;
+        HashSet<ChessMove> enemyMoves = new HashSet<>();
+        ChessPiece currentPiece;
+        for (int i = 1; i < 9; i++){
+            for (int j = 1; j < 9; j++){
+                iteratorPosition = new ChessPosition(i, j);
+                currentPiece = board.getPiece(iteratorPosition);
+                if (currentPiece != null && currentPiece.pieceColor != teamColor){
+                    enemyMoves.addAll(currentPiece.pieceMoves(board, iteratorPosition));
+                }
+            }
+        }
+        return enemyMoves;
+    }
+
     /**
      * Determines if the given team is in checkmate
      *
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
-    public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+    public boolean isInCheckmate(TeamColor teamColor){
+        TeamColor oppositeColor;
+        if(teamColor == TeamColor.WHITE) oppositeColor = TeamColor.BLACK;
+        else oppositeColor = TeamColor.WHITE;
+        //checkmate if 1.King is in check, 2.Team Pieces can't stop check
+        if (isInCheck(teamColor)){
+            //2.Team Pieces cant stop check
+            HashSet<ChessMove> teamMoves = new HashSet<>(getEnemyMoves(oppositeColor, board));
+            //simulate moves and check for check
+            ChessBoard copyBoard;
+            Iterator<ChessMove> iter = teamMoves.iterator();
+
+            while (iter.hasNext()){
+                copyBoard = this.getBoard().copy();
+                makeMove(iter.next(), copyBoard);
+                if (!isInCheck(teamColor, copyBoard)) return false;
+            }
+            return true;
+
+        }
+        return false;
     }
 
     /**
