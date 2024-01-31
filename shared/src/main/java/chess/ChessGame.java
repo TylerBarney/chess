@@ -1,6 +1,8 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -78,9 +80,34 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        ChessBoard copyBoard = this.board.copy();
+        ChessPosition iteratorPosition;
+        HashSet<ChessMove> enemyMoves = new HashSet<>();
+        ChessPiece currentPiece;
+        ChessPosition kingPosition = null;
 
-        return true;
+        //get enemy moves and team king position
+        for (int i = 1; i < 9; i++){
+            for (int j = 1; j < 9; j++){
+                iteratorPosition = new ChessPosition(i, j);
+                currentPiece = board.getPiece(iteratorPosition);
+                if (currentPiece != null && currentPiece.pieceColor != teamColor){
+                    enemyMoves.addAll(currentPiece.pieceMoves(board, iteratorPosition));
+                } else if (currentPiece != null && currentPiece.getPieceType() == ChessPiece.PieceType.KING && currentPiece.getTeamColor() == teamColor ){
+                    kingPosition = iteratorPosition;
+                }
+
+            }
+        }
+
+        //check if teamColor King is in any endposition
+        Iterator<ChessMove> iter = enemyMoves.iterator();
+
+        while (iter.hasNext()){
+            if (iter.next().getEndPosition().equals(kingPosition)){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
