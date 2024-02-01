@@ -52,8 +52,21 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         //Get Piece info
         ChessPiece piece = board.getPiece(startPosition);
+        //get Moves
+        HashSet<ChessMove> pieceMoves = (HashSet<ChessMove>) piece.pieceMoves(board, startPosition);
+        //remove moves that will put team in check
+        Iterator<ChessMove> iter = pieceMoves.iterator();
+        ChessBoard copyBoard;
+        while(iter.hasNext()){
+            copyBoard = board.copy();
+            TeamColor myteam = piece.getTeamColor();
+            makeMove(iter.next(), copyBoard);
+            if(isInCheck(myteam, copyBoard) ) {
+                iter.remove();
+            }
+        }
         //return set of moves based on piece and board
-        return piece.pieceMoves(board, startPosition);
+        return pieceMoves;
     }
 
     /**
@@ -66,14 +79,20 @@ public class ChessGame {
         ChessPosition startingPosition = move.getStartPosition();
         ChessPosition endPosition = move.getEndPosition();
         ChessPiece piece = board.getPiece(startingPosition);
+        //check if team turn
+        if (piece.getTeamColor() != teamTurn) throw new InvalidMoveException("Not team turn");
+        //check valid moves
+        if (!validMoves(startingPosition).contains(move)) throw new InvalidMoveException("Invalid Move");
         //move piece
         board.addPiece(endPosition, piece);
         //empty starting position
         board.addPiece(startingPosition, null);
-
+        teamTurn = (teamTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
     }
 
-    public void makeMove(ChessMove move, ChessBoard board) {
+    //used for simulating chess moves
+    public void makeMove(ChessMove move, ChessBoard board){
+
         ChessPosition startingPosition = move.getStartPosition();
         ChessPosition endPosition = move.getEndPosition();
         ChessPiece piece = board.getPiece(startingPosition);
@@ -81,7 +100,7 @@ public class ChessGame {
         board.addPiece(endPosition, piece);
         //empty starting position
         board.addPiece(startingPosition, null);
-
+        teamTurn = (teamTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
     }
 
     /**
@@ -91,20 +110,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-
-        //get enemy moves and team king position
-        HashSet<ChessMove> enemyMoves = getEnemyMoves(teamColor, board);
-        ChessPosition kingPosition = board.searchBoardFor(new ChessPiece(teamColor, ChessPiece.PieceType.KING));
-
-        //check if teamColor King is in any endposition
-        Iterator<ChessMove> iter = enemyMoves.iterator();
-
-        while (iter.hasNext()){
-            if (iter.next().getEndPosition().equals(kingPosition)){
-                return true;
-            }
-        }
-        return false;
+        return isInCheck(teamColor, this.board);
     }
 
     //variation of isInCheck method with board parameter
