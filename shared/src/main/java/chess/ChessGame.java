@@ -79,6 +79,10 @@ public class ChessGame {
         ChessPosition startingPosition = move.getStartPosition();
         ChessPosition endPosition = move.getEndPosition();
         ChessPiece piece = board.getPiece(startingPosition);
+        ChessPiece.PieceType promotionType = move.getPromotionPiece();
+
+        //move where there is no piece
+        if (piece == null) throw new InvalidMoveException("No piece there");
         //check if team turn
         if (piece.getTeamColor() != teamTurn) throw new InvalidMoveException("Not team turn");
         //check valid moves
@@ -87,6 +91,11 @@ public class ChessGame {
         board.addPiece(endPosition, piece);
         //empty starting position
         board.addPiece(startingPosition, null);
+
+        //if piece has promotion
+        if (promotionType != null){
+            board.addPiece(endPosition, new ChessPiece(piece.getTeamColor(), promotionType));
+        }
         teamTurn = (teamTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
     }
 
@@ -100,7 +109,6 @@ public class ChessGame {
         board.addPiece(endPosition, piece);
         //empty starting position
         board.addPiece(startingPosition, null);
-        teamTurn = (teamTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
     }
 
     /**
