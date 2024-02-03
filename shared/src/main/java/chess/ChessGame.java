@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import static java.lang.Math.abs;
+
 /**
  * For a class that can manage a chess game, making moves on a board
  * <p>
@@ -60,9 +62,24 @@ public class ChessGame {
         while(iter.hasNext()){
             copyBoard = board.copy();
             TeamColor myteam = piece.getTeamColor();
-            makeMove(iter.next(), copyBoard);
+            ChessMove move = iter.next();
+            makeMove(move, copyBoard);
             if(isInCheck(myteam, copyBoard) ) {
                 iter.remove();
+            } else {
+                //repurpose isInCheck to see if rook position will be safe after castle
+                ChessPosition endPosition = move.getEndPosition();
+                if (piece.getPieceType() == ChessPiece.PieceType.KING & abs(startPosition.getColumn() - endPosition.getColumn()) == 2){
+                    copyBoard = board.copy();
+                    //check if king side will be safe for rook
+                    int rookEndCol = (endPosition.getColumn() == 7) ? 6 : 4;
+                    ChessPosition rookEndPos = new ChessPosition(endPosition.getRow(), rookEndCol);
+                    ChessMove rookMove = new ChessMove(startPosition, rookEndPos, null);
+                    makeMove(rookMove, copyBoard);
+                    if(isInCheck(myteam, copyBoard)){
+                        iter.remove();
+                    }
+                }
             }
         }
         //return set of moves based on piece and board
@@ -91,6 +108,17 @@ public class ChessGame {
         board.addPiece(endPosition, piece);
         //empty starting position
         board.addPiece(startingPosition, null);
+        //check for castle move
+        if (piece.getPieceType() == ChessPiece.PieceType.KING & abs(startingPosition.getColumn() - endPosition.getColumn()) == 2){
+            int rookRow = (piece.getTeamColor() == TeamColor.WHITE) ? 1 : 8;
+            int rookCol = (endPosition.getColumn() == 7) ? 8 : 1;
+            ChessPosition rookStartingPos = new ChessPosition(rookRow, rookCol);
+            int rookEndCol = (endPosition.getColumn() == 7) ? 6 : 4;
+            ChessPosition rookEndPos = new ChessPosition(rookRow, rookEndCol);
+            ChessPiece rookPiece = board.getPiece(rookStartingPos);
+            board.addPiece(rookEndPos, rookPiece);
+            board.addPiece(rookStartingPos, null);
+        }
 
         //if piece has promotion
         if (promotionType != null){
@@ -109,6 +137,7 @@ public class ChessGame {
         board.addPiece(endPosition, piece);
         //empty starting position
         board.addPiece(startingPosition, null);
+        if (piece != null) piece.setHasMoved(true);
     }
 
     /**
@@ -138,6 +167,8 @@ public class ChessGame {
         }
         return false;
     }
+
+
 
     //Gets all enemy moves and stores in HashSet
     private HashSet<ChessMove> getEnemyMoves(TeamColor teamColor, ChessBoard board){

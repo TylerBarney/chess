@@ -28,7 +28,19 @@ public class ChessBoard {
     public void addPiece(ChessPosition position, ChessPiece piece) {
         //add piece to board array
         unCapturedPieces[position.getRow()-1][position.getColumn()-1] = piece;
-        //throw new RuntimeException("Not implemented");
+
+        //setting Piece has moved
+        //check if has moved is false. create resetboard check if position is different on our board than resetBoard. if it is set to true
+        if (piece != null && !piece.getHasMoved()){
+            ChessBoard resetBoard = new ChessBoard();
+            resetBoard.resetBoard();
+            ChessPosition resetPosition = resetBoard.searchBoardFor(piece);
+            resetBoard.addPiece(resetPosition, null);
+            ChessPosition resetPosition2 = resetBoard.searchBoardFor(piece);
+            if (!position.equals(resetPosition) && !position.equals(resetPosition2)){
+                piece.setHasMoved(true);
+            }
+        }
     }
 
     /**
@@ -76,7 +88,6 @@ public class ChessBoard {
         for (int i = 0; i < unCapturedPieces[0].length; i++){
             unCapturedPieces[6][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
         }
-        //throw new RuntimeException("Not implemented");
     }
 
     //checks if position is empty

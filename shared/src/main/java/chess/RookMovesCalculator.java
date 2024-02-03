@@ -50,6 +50,31 @@ public class RookMovesCalculator implements MoveCalculator{
             i++;
             endPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn() + i);
         }
+
+        if (!thisPiece.getHasMoved()){
+            //get king, check if it has moved
+            ChessPosition kingPosition = (thisPiece.getTeamColor() == ChessGame.TeamColor.WHITE) ? new ChessPosition(1, 5) : new ChessPosition(8, 5);
+            ChessPiece king = board.getPiece(kingPosition);
+
+            if (king != null && king.getPieceType() == ChessPiece.PieceType.KING){
+                if (!king.getHasMoved()){
+                    if (myPosition.getColumn() == 8){ //kingside castle
+                        //check pieces between
+                        if (!board.isPlaceEmpty(new ChessPosition(myPosition.getRow(), 6)) || !board.isPlaceEmpty(new ChessPosition(myPosition.getRow(), 7))){
+                            return moves;
+                        }
+                        moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), 6), null));
+                    } else if (myPosition.getColumn() == 1){ //queen-side castle
+                        //check pieces between
+                        if (!board.isPlaceEmpty(new ChessPosition(myPosition.getRow(), 4)) || !board.isPlaceEmpty(new ChessPosition(myPosition.getRow(), 3)) || !board.isPlaceEmpty(new ChessPosition(myPosition.getRow(), 2))){
+                            return moves;
+                        }
+                        moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), 4), null));
+                    }
+                }
+            }
+
+        }
         return moves;
     }
 
