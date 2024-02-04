@@ -109,20 +109,48 @@ public class ChessGame {
         //empty starting position
         board.addPiece(startingPosition, null);
         //check for castle move
-        if (piece.getPieceType() == ChessPiece.PieceType.KING & abs(startingPosition.getColumn() - endPosition.getColumn()) == 2){
-            int rookRow = (piece.getTeamColor() == TeamColor.WHITE) ? 1 : 8;
-            int rookCol = (endPosition.getColumn() == 7) ? 8 : 1;
-            ChessPosition rookStartingPos = new ChessPosition(rookRow, rookCol);
-            int rookEndCol = (endPosition.getColumn() == 7) ? 6 : 4;
-            ChessPosition rookEndPos = new ChessPosition(rookRow, rookEndCol);
-            ChessPiece rookPiece = board.getPiece(rookStartingPos);
-            board.addPiece(rookEndPos, rookPiece);
-            board.addPiece(rookStartingPos, null);
+        makeCastleMove(piece, startingPosition, endPosition);
+        //check for pawn moving 2 forward
+        if (piece.getPieceType() == ChessPiece.PieceType.PAWN & abs(startingPosition.rowPosition - endPosition.getRow()) == 2){
+            ChessPiece leftPiece = board.getPiece(new ChessPosition(endPosition.getRow(), endPosition.getColumn() - 1));
+            ChessPiece rightPiece = board.getPiece(new ChessPosition(endPosition.getRow(), endPosition.getColumn() + 1));
+            if (leftPiece != null){
+                if (leftPiece.getPieceType() == ChessPiece.PieceType.PAWN & leftPiece.getTeamColor() != piece.getTeamColor()){
+                    leftPiece.setRightEnPassant(true);
+                }
+            }
+            if (rightPiece != null){
+                if (rightPiece.getPieceType() == ChessPiece.PieceType.PAWN & rightPiece.getTeamColor() != piece.getTeamColor()){
+                    rightPiece.setLeftEnPassant(true);
+                }
+            }
         }
+        //check for pawn taking advantage of en passant
+
+        if ((piece.isLeftEnPassant() || piece.isRightEnPassant()) & startingPosition.getColumn() != endPosition.getColumn()){
+            ChessPosition enemyPawnPos;
+            board.addPiece(endPosition, piece);
+            if (teamTurn == TeamColor.WHITE){
+                enemyPawnPos = new ChessPosition(endPosition.getRow() - 1, endPosition.getColumn());
+            } else {
+                enemyPawnPos = new ChessPosition(endPosition.getRow() + 1, endPosition.getColumn());
+            }
+            board.addPiece(startingPosition, null);
+            board.addPiece(enemyPawnPos, null);
+        }
+
 
         //if piece has promotion
         if (promotionType != null){
             board.addPiece(endPosition, new ChessPiece(piece.getTeamColor(), promotionType));
+        }
+        //reset en passant values to false
+        for (int i = 0; i < board.unCapturedPieces.length; i++){
+            for (int j = 0; j < board.unCapturedPieces.length; j++){
+                if (board.unCapturedPieces[i][j] == null || board.unCapturedPieces[i][j].getTeamColor() != teamTurn) continue;
+                board.unCapturedPieces[i][j].setRightEnPassant(false);
+                board.unCapturedPieces[i][j].setLeftEnPassant(false);
+            }
         }
         teamTurn = (teamTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
     }
@@ -236,6 +264,20 @@ public class ChessGame {
             }
         }
         return true;
+    }
+
+    //perform the castle Move
+    private void makeCastleMove(ChessPiece piece, ChessPosition startingPosition, ChessPosition endPosition) {
+        if (piece.getPieceType() == ChessPiece.PieceType.KING & abs(startingPosition.getColumn() - endPosition.getColumn()) == 2){
+            int rookRow = (piece.getTeamColor() == TeamColor.WHITE) ? 1 : 8;
+            int rookCol = (endPosition.getColumn() == 7) ? 8 : 1;
+            ChessPosition rookStartingPos = new ChessPosition(rookRow, rookCol);
+            int rookEndCol = (endPosition.getColumn() == 7) ? 6 : 4;
+            ChessPosition rookEndPos = new ChessPosition(rookRow, rookEndCol);
+            ChessPiece rookPiece = board.getPiece(rookStartingPos);
+            board.addPiece(rookEndPos, rookPiece);
+            board.addPiece(rookStartingPos, null);
+        }
     }
 
     /**

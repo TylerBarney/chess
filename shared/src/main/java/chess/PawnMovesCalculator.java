@@ -72,6 +72,26 @@ public class PawnMovesCalculator implements MoveCalculator{
                 moves.add(new ChessMove(myPosition, endPosition, null));
             }
         }
+        //enPassant right
+        if (thisPiece.isRightEnPassant()){
+            if (thisPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                endPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 1);
+                moves.add( new ChessMove(myPosition, endPosition, null));
+            } else {
+                endPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1);
+                moves.add(new ChessMove(myPosition, endPosition, null));
+            }
+        }
+        //enPassant left
+        if(thisPiece.isLeftEnPassant()){
+            if (thisPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                endPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1);
+                moves.add(new ChessMove(myPosition, endPosition, null));
+            } else {
+                endPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 1);
+                moves.add(new ChessMove(myPosition, endPosition, null));
+            }
+        }
         return moves;
     }
 

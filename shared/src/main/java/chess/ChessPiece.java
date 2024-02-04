@@ -19,6 +19,8 @@ public class ChessPiece {
 
 
     boolean hasMoved;
+    boolean leftEnPassant = false;
+    boolean rightEnPassant = false;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
@@ -93,6 +95,22 @@ public class ChessPiece {
 
     public void setHasMoved(boolean hasMoved) {
         this.hasMoved = hasMoved;
+    }
+
+    public boolean isLeftEnPassant() {
+        return leftEnPassant;
+    }
+
+    public void setLeftEnPassant(boolean leftEnPassant) {
+        this.leftEnPassant = leftEnPassant;
+    }
+
+    public boolean isRightEnPassant() {
+        return rightEnPassant;
+    }
+
+    public void setRightEnPassant(boolean rightEnPassant) {
+        this.rightEnPassant = rightEnPassant;
     }
 
     @Override
