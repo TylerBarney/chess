@@ -109,36 +109,18 @@ public class ChessGame {
         //empty starting position
         board.addPiece(startingPosition, null);
         //check for castle move
-        makeCastleMove(piece, startingPosition, endPosition);
-        //check for pawn moving 2 forward
-        if (piece.getPieceType() == ChessPiece.PieceType.PAWN & abs(startingPosition.rowPosition - endPosition.getRow()) == 2){
-            ChessPiece leftPiece = board.getPiece(new ChessPosition(endPosition.getRow(), endPosition.getColumn() - 1));
-            ChessPiece rightPiece = board.getPiece(new ChessPosition(endPosition.getRow(), endPosition.getColumn() + 1));
-            if (leftPiece != null){
-                if (leftPiece.getPieceType() == ChessPiece.PieceType.PAWN & leftPiece.getTeamColor() != piece.getTeamColor()){
-                    leftPiece.setRightEnPassant(true);
-                }
-            }
-            if (rightPiece != null){
-                if (rightPiece.getPieceType() == ChessPiece.PieceType.PAWN & rightPiece.getTeamColor() != piece.getTeamColor()){
-                    rightPiece.setLeftEnPassant(true);
-                }
-            }
+        if (piece.getPieceType() == ChessPiece.PieceType.KING & abs(startingPosition.getColumn() - endPosition.getColumn()) == 2){
+            makeCastleMove(piece, endPosition);
+        }
+
+        //check for enpassant update
+        if (piece.getPieceType() == ChessPiece.PieceType.PAWN & abs(startingPosition.getRow() - endPosition.getRow()) == 2){
+            updateEnPassant(piece, endPosition);
         }
         //check for pawn taking advantage of en passant
-
         if ((piece.isLeftEnPassant() || piece.isRightEnPassant()) & startingPosition.getColumn() != endPosition.getColumn()){
-            ChessPosition enemyPawnPos;
-            board.addPiece(endPosition, piece);
-            if (teamTurn == TeamColor.WHITE){
-                enemyPawnPos = new ChessPosition(endPosition.getRow() - 1, endPosition.getColumn());
-            } else {
-                enemyPawnPos = new ChessPosition(endPosition.getRow() + 1, endPosition.getColumn());
-            }
-            board.addPiece(startingPosition, null);
-            board.addPiece(enemyPawnPos, null);
+            makeEnPassantMove(piece, startingPosition, endPosition);
         }
-
 
         //if piece has promotion
         if (promotionType != null){
@@ -267,17 +249,44 @@ public class ChessGame {
     }
 
     //perform the castle Move
-    private void makeCastleMove(ChessPiece piece, ChessPosition startingPosition, ChessPosition endPosition) {
-        if (piece.getPieceType() == ChessPiece.PieceType.KING & abs(startingPosition.getColumn() - endPosition.getColumn()) == 2){
-            int rookRow = (piece.getTeamColor() == TeamColor.WHITE) ? 1 : 8;
-            int rookCol = (endPosition.getColumn() == 7) ? 8 : 1;
-            ChessPosition rookStartingPos = new ChessPosition(rookRow, rookCol);
-            int rookEndCol = (endPosition.getColumn() == 7) ? 6 : 4;
-            ChessPosition rookEndPos = new ChessPosition(rookRow, rookEndCol);
-            ChessPiece rookPiece = board.getPiece(rookStartingPos);
-            board.addPiece(rookEndPos, rookPiece);
-            board.addPiece(rookStartingPos, null);
+    private void makeCastleMove(ChessPiece piece, ChessPosition endPosition) {
+        int rookRow = (piece.getTeamColor() == TeamColor.WHITE) ? 1 : 8;
+        int rookCol = (endPosition.getColumn() == 7) ? 8 : 1;
+        ChessPosition rookStartingPos = new ChessPosition(rookRow, rookCol);
+        int rookEndCol = (endPosition.getColumn() == 7) ? 6 : 4;
+        ChessPosition rookEndPos = new ChessPosition(rookRow, rookEndCol);
+        ChessPiece rookPiece = board.getPiece(rookStartingPos);
+        board.addPiece(rookEndPos, rookPiece);
+        board.addPiece(rookStartingPos, null);
+    }
+
+    //if pawn moves up two, enpassant updates are applied
+    private void updateEnPassant(ChessPiece piece, ChessPosition endPosition){
+        ChessPiece leftPiece = board.getPiece(new ChessPosition(endPosition.getRow(), endPosition.getColumn() - 1));
+        ChessPiece rightPiece = board.getPiece(new ChessPosition(endPosition.getRow(), endPosition.getColumn() + 1));
+        if (leftPiece != null){
+            if (leftPiece.getPieceType() == ChessPiece.PieceType.PAWN & leftPiece.getTeamColor() != piece.getTeamColor()){
+                leftPiece.setRightEnPassant(true);
+            }
         }
+        if (rightPiece != null){
+            if (rightPiece.getPieceType() == ChessPiece.PieceType.PAWN & rightPiece.getTeamColor() != piece.getTeamColor()){
+                rightPiece.setLeftEnPassant(true);
+            }
+        }
+    }
+
+    //make enpassant move
+    private void makeEnPassantMove(ChessPiece piece, ChessPosition startingPosition, ChessPosition endPosition) {
+        ChessPosition enemyPawnPos;
+        board.addPiece(endPosition, piece);
+        if (teamTurn == TeamColor.WHITE){
+            enemyPawnPos = new ChessPosition(endPosition.getRow() - 1, endPosition.getColumn());
+        } else {
+            enemyPawnPos = new ChessPosition(endPosition.getRow() + 1, endPosition.getColumn());
+        }
+        board.addPiece(startingPosition, null);
+        board.addPiece(enemyPawnPos, null);
     }
 
     /**
