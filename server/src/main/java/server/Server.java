@@ -25,7 +25,8 @@ public class Server {
         // Register your endpoints and handle exceptions here.
         Spark.get("/hello", (req, res) -> "Hello BYU!"); //sp server can start up
         Spark.post("/user", this::registerHandler);
-        Spark.delete("/db", (req, res) -> {userDaoMemory.clear(); authDAOMemory.clear(); res.status(200); return "";});
+        Spark.delete("/db", (req, res) -> {userDaoMemory.clear(); authDAOMemory.clear(); res.status(200); return "{}";});
+        Spark.delete("/session", this::logoutHandler);
         Spark.post("/session", this::loginHandler);
         Spark.awaitInitialization();
         return Spark.port();
@@ -66,6 +67,22 @@ public class Server {
             var authToken = userService.login(user);
             res.status(200); //why isn't this responding with 200 code
             return new Gson().toJson(authToken);
+
+        } catch(Throwable ex){
+            if (ex.getMessage().equals("401")){
+                res.status(401);
+                ErrorMessage errorMessage = new ErrorMessage("Error: unauthorized");
+                return new Gson().toJson(errorMessage);
+            }
+            return null;
+        }
+    }
+    private Object logoutHandler(Request req, Response res) throws DataAccessException {
+        try {
+            String authToken = req.headers("Authorization");
+            userService.logout(authToken);
+            res.status(200); //why isn't this responding with 200 code
+            return "{}";
 
         } catch(Throwable ex){
             if (ex.getMessage().equals("401")){

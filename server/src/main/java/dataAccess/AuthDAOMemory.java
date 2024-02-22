@@ -8,15 +8,30 @@ import java.util.Map;
 
 public class AuthDAOMemory implements AuthDAO{
 
-    private HashMap<String, AuthData> authMap = new HashMap<>();
+    private HashMap<String, String> authMap = new HashMap<>();
     @Override
     public void addAuthToken(AuthData authToken) {
-        authMap.put(authToken.getAuthToken(), authToken);
+        if (containsUser(authToken.getUserName())){
+            authMap.values().remove(authToken.getUserName());
+        }
+        authMap.put(authToken.getAuthToken(), authToken.getUserName());
     }
 
     @Override
-    public void checkAuthToken(AuthData authToken) {
-        authMap.get(authToken.getAuthToken());
+    public AuthData checkAuthToken(String authToken) {
+        String username = authMap.get(authToken);
+        if (username != null){
+            return new AuthData(username, authToken);
+        }
+        return null;
+    }
+
+    public boolean containsUser(String username){
+        return authMap.containsValue(username);
+    }
+
+    public void removeAuthToken(String authToken){
+        authMap.remove(authToken);
     }
 
     @Override

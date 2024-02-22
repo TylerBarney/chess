@@ -20,6 +20,9 @@ public class UserService {
         if (userDAO.getUser(user.getUserName()) != null){
             throw new DataAccessException("403");
         }
+        if (!user.isComplete()){
+            throw new DataAccessException("400");
+        }
         userDAO.createUser(user);
         AuthData authData = new AuthData(user.getUserName());
         authDAO.addAuthToken(authData);
@@ -35,5 +38,13 @@ public class UserService {
         } else {
             throw new DataAccessException("401");
         }
+    }
+
+    public void logout(String authToken) throws DataAccessException {
+        //check if unauthorized
+        if (authDAO.checkAuthToken(authToken) == null){
+            throw new DataAccessException("401");
+        }
+        authDAO.removeAuthToken(authToken);
     }
 }
