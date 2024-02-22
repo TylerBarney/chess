@@ -25,4 +25,15 @@ public class UserService {
         authDAO.addAuthToken(authData);
         return authData;
     }
+
+    public AuthData login(LoginRequest loginRequest) throws DataAccessException {
+        UserData user = userDAO.getUser(loginRequest.username());
+        if (user != null && user.getPassword().equals(loginRequest.password())){
+            AuthData authData = new AuthData(loginRequest.username());
+            authDAO.addAuthToken(authData);
+            return authData;
+        } else {
+            throw new DataAccessException("401");
+        }
+    }
 }
