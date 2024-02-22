@@ -39,6 +39,9 @@ public class Server {
     private Object registerHandler(Request req, Response res) throws DataAccessException {
         try {
             var user = new Gson().fromJson(req.body(), UserData.class);
+            if (!user.isComplete()){
+                throw new DataAccessException("400");
+            }
             var authToken = userService.register(user);
             res.status(200); //why isn't this responding with 200 code
             return new Gson().toJson(authToken);
@@ -48,12 +51,12 @@ public class Server {
                 res.status(403);
                 ErrorMessage errorMessage = new ErrorMessage("Error: already taken");
                 return new Gson().toJson(errorMessage);
-            } else if (ex.getMessage().equals("400")){
+            } else {
                 res.status(400);
                 ErrorMessage errorMessage = new ErrorMessage("Error: bad request");
                 return new Gson().toJson(errorMessage);
             }
-            return null;
+
         }
     }
 
@@ -66,7 +69,7 @@ public class Server {
 
         } catch(Throwable ex){
             if (ex.getMessage().equals("401")){
-                res.status(403);
+                res.status(401);
                 ErrorMessage errorMessage = new ErrorMessage("Error: unauthorized");
                 return new Gson().toJson(errorMessage);
             }

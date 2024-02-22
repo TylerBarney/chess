@@ -37,6 +37,13 @@ public class UserData {
         this.email = email;
     }
 
+    public boolean isComplete(){
+        if (email == null || password == null || username == null){
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
