@@ -63,6 +63,7 @@ public class GameData {
         this.game = game;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

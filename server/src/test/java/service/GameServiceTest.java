@@ -74,4 +74,5 @@ class GameServiceTest {
                 () -> gameService.listGames(null), "Didn't throw bad auth");
 
     }
+
 }

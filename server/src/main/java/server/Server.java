@@ -14,6 +14,7 @@ import spark.*;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Server {
     private UserDAOMemory userDaoMemory = new UserDAOMemory();
@@ -30,11 +31,12 @@ public class Server {
         // Register your endpoints and handle exceptions here.
         Spark.get("/hello", (req, res) -> "Hello BYU!"); //sp server can start up
         Spark.post("/user", this::registerHandler);
-        Spark.delete("/db", (req, res) -> {userDaoMemory.clear(); authDAOMemory.clear(); res.status(200); return "{}";});
+        Spark.delete("/db", (req, res) -> {userDaoMemory.clear(); authDAOMemory.clear(); gameDAOMemory.clear(); res.status(200); return "{}";});
         Spark.delete("/session", this::logoutHandler);
         Spark.post("/session", this::loginHandler);
         Spark.post("/game", this::createGameHandler);
         Spark.get("/game", this::listGameHandler);
+        Spark.put("/game", this::joinGameHandler);
         Spark.awaitInitialization();
         return Spark.port();
     }
@@ -122,8 +124,8 @@ public class Server {
             String authToken = req.headers("Authorization");
             res.status(200);
             HashMap<Integer, GameData> gameList = gameService.listGames(authToken);
-            String returned = new Gson().toJson(gameList.values());
-            //System.out.println(returned);
+            ListResponse listResponse = new ListResponse(gameList.values());
+            var returned = new Gson().toJson(listResponse);
             return returned;
 
         } catch(Throwable ex){
@@ -131,8 +133,42 @@ public class Server {
                 res.status(401);
                 ErrorMessage errorMessage = new ErrorMessage("Error: unauthorized");
                 return new Gson().toJson(errorMessage);
+            } else if (ex.getMessage().equals("403")){
+                res.status(403);
+                ErrorMessage errorMessage = new ErrorMessage("Error: already taken");
+                return new Gson().toJson(errorMessage);
+            } else {
+                res.status(400);
+                ErrorMessage errorMessage = new ErrorMessage("Error: bad request");
+                return new Gson().toJson(errorMessage);
             }
-            return null;
+        }
+    }
+
+    private Object joinGameHandler(Request req, Response res) throws DataAccessException {
+        try {
+            JoinRequest joinData = new Gson().fromJson(req.body(), JoinRequest.class);
+            String authToken = req.headers("Authorization");
+            String playerColor = joinData.playerColor();
+            int gameID = joinData.gameID();
+            res.status(200);
+            gameService.joinGame(playerColor, gameID, authToken);
+            return "{}";
+
+        } catch(Throwable ex){
+            if (ex.getMessage().equals("401")){
+                res.status(401);
+                ErrorMessage errorMessage = new ErrorMessage("Error: unauthorized");
+                return new Gson().toJson(errorMessage);
+            }  else if (ex.getMessage().equals("403")){
+                res.status(403);
+                ErrorMessage errorMessage = new ErrorMessage("Error: already taken");
+                return new Gson().toJson(errorMessage);
+            } else {
+                res.status(400);
+                ErrorMessage errorMessage = new ErrorMessage("Error: bad request");
+                return new Gson().toJson(errorMessage);
+            }
         }
     }
 
