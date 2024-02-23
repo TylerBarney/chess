@@ -3,6 +3,7 @@ package chess;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Objects;
 
 import static java.lang.Math.abs;
 
@@ -18,6 +19,10 @@ public class ChessGame {
     private ChessBoard board;
     public ChessGame() {
 
+    }
+    public ChessGame(boolean newGame){
+        this.board = new ChessBoard(); //added this to instantiate a board
+        board.resetBoard();
     }
 
     /**
@@ -305,5 +310,18 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return this.board;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessGame chessGame = (ChessGame) o;
+        return teamTurn == chessGame.teamTurn && Objects.equals(board, chessGame.board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(teamTurn, board);
     }
 }

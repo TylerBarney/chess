@@ -3,19 +3,20 @@ package server;
 import com.google.gson.Gson;
 import dataAccess.AuthDAOMemory;
 import dataAccess.DataAccessException;
+import dataAccess.GameDAOMemory;
 import model.UserData;
 import dataAccess.UserDAOMemory;
 import org.eclipse.jetty.server.Authentication;
 import passoffTests.testClasses.TestException;
-import service.ErrorMessage;
-import service.LoginRequest;
-import service.UserService;
+import service.*;
 import spark.*;
 
 public class Server {
     private UserDAOMemory userDaoMemory = new UserDAOMemory();
     private AuthDAOMemory authDAOMemory = new AuthDAOMemory();
+    private GameDAOMemory gameDAOMemory = new GameDAOMemory();
     private UserService userService = new UserService(userDaoMemory, authDAOMemory);
+    private GameService gameService = new GameService(gameDAOMemory, authDAOMemory);
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -28,6 +29,7 @@ public class Server {
         Spark.delete("/db", (req, res) -> {userDaoMemory.clear(); authDAOMemory.clear(); res.status(200); return "{}";});
         Spark.delete("/session", this::logoutHandler);
         Spark.post("/session", this::loginHandler);
+        Spark.post("/game", this::createGameHandler);
         Spark.awaitInitialization();
         return Spark.port();
     }
@@ -93,5 +95,24 @@ public class Server {
             return null;
         }
     }
+
+    private Object createGameHandler(Request req, Response res) throws DataAccessException {
+        try {
+            var gameName = new Gson().fromJson(req.body(), CreateGameRequest.class);
+            String authToken = req.headers("Authorization");
+            res.status(200);
+            return String.format("{ \"gameID\": %d }", gameService.createGame(gameName.gameName(), authToken));
+
+        } catch(Throwable ex){
+            if (ex.getMessage().equals("401")){
+                res.status(401);
+                ErrorMessage errorMessage = new ErrorMessage("Error: unauthorized");
+                return new Gson().toJson(errorMessage);
+            }
+            return null;
+        }
+    }
+
+
 
 }

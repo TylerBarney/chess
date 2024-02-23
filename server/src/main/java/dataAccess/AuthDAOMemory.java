@@ -19,6 +19,9 @@ public class AuthDAOMemory implements AuthDAO{
 
     @Override
     public AuthData checkAuthToken(String authToken) {
+        if (authToken == null){
+            return null;
+        }
         String username = authMap.get(authToken);
         if (username != null){
             return new AuthData(username, authToken);
