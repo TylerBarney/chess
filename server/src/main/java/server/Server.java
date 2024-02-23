@@ -4,12 +4,16 @@ import com.google.gson.Gson;
 import dataAccess.AuthDAOMemory;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAOMemory;
+import model.GameData;
 import model.UserData;
 import dataAccess.UserDAOMemory;
 import org.eclipse.jetty.server.Authentication;
 import passoffTests.testClasses.TestException;
 import service.*;
 import spark.*;
+
+import java.util.Collection;
+import java.util.HashMap;
 
 public class Server {
     private UserDAOMemory userDaoMemory = new UserDAOMemory();
@@ -30,6 +34,7 @@ public class Server {
         Spark.delete("/session", this::logoutHandler);
         Spark.post("/session", this::loginHandler);
         Spark.post("/game", this::createGameHandler);
+        Spark.get("/game", this::listGameHandler);
         Spark.awaitInitialization();
         return Spark.port();
     }
@@ -102,6 +107,24 @@ public class Server {
             String authToken = req.headers("Authorization");
             res.status(200);
             return String.format("{ \"gameID\": %d }", gameService.createGame(gameName.gameName(), authToken));
+
+        } catch(Throwable ex){
+            if (ex.getMessage().equals("401")){
+                res.status(401);
+                ErrorMessage errorMessage = new ErrorMessage("Error: unauthorized");
+                return new Gson().toJson(errorMessage);
+            }
+            return null;
+        }
+    }
+    private Object listGameHandler(Request req, Response res) throws DataAccessException {
+        try {
+            String authToken = req.headers("Authorization");
+            res.status(200);
+            HashMap<Integer, GameData> gameList = gameService.listGames(authToken);
+            String returned = new Gson().toJson(gameList.values());
+            //System.out.println(returned);
+            return returned;
 
         } catch(Throwable ex){
             if (ex.getMessage().equals("401")){
