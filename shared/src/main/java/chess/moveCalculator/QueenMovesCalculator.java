@@ -1,25 +1,25 @@
-package chess;
+package chess.moveCalculator;
+
+import chess.ChessBoard;
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.ChessPosition;
 
 import java.util.Collection;
 import java.util.HashSet;
 
-public class KnightMovesCalculator implements MoveCalculator{
+public class QueenMovesCalculator implements MoveCalculator{
     private ChessPiece thisPiece;
-    public KnightMovesCalculator(ChessPiece thisPiece){
+    public QueenMovesCalculator(ChessPiece thisPiece){
         this.thisPiece = thisPiece;
     }
 
     @Override
     public Collection<ChessMove> pieceMoves (ChessBoard board, ChessPosition myPosition){
-        HashSet<ChessMove> moves = new HashSet<>();
-        int[][] possibleMoves = {{2,-1}, {2,1},{1,2},{-1,2},{-2,1},{-2,-1},{-1,-2},{1,-2}};
-        ChessPosition endPosition;
-        for (int i = 0; i < possibleMoves.length; i++){
-            endPosition = new ChessPosition(myPosition.getRow() + possibleMoves[i][0], myPosition.getColumn() + possibleMoves[i][1]);
-            if (canMove(board, endPosition) == 0 || canMove(board, endPosition) == 1){
-                moves.add(new ChessMove(myPosition, endPosition, null));
-            }
-        }
+        BishopMovesCalculator bishopMovesCalculator = new BishopMovesCalculator(thisPiece);
+        RookMovesCalculator rookMovesCalculator = new RookMovesCalculator(thisPiece);
+        HashSet<ChessMove> moves = new HashSet<>(bishopMovesCalculator.pieceMoves(board, myPosition));
+        moves.addAll(rookMovesCalculator.pieceMoves(board, myPosition));
         return moves;
     }
 

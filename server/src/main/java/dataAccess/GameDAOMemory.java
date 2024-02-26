@@ -27,11 +27,6 @@ public class GameDAOMemory implements GameDAO{
         return gameList;
     }
 
-    @Override
-    public void updateGame(GameData gameData) {
-        Integer gameID = gameData.getGameID();
-        gameList.replace(gameID, gameData);
-    }
 
     @Override
     public void clear() {
