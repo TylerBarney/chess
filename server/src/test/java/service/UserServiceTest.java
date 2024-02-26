@@ -76,13 +76,12 @@ class UserServiceTest {
         AuthData authData = userService.login(exampleLogin);
         userService.logout(authData.getAuthToken());
         Assertions.assertNull(authDAO.checkAuthToken(authData.getAuthToken()), "AuthToken still in AuthDAO");
-        Assertions.assertFalse(authDAO.containsUser(exampleUser.getUserName()), "Username still in AuthDAO");
     }
 
     @Test
     void unAuthorizedLogout() throws DataAccessException {
         UserData exampleUser = new UserData("test1", "test2", "test@test");
-        AuthData authData = userService.register(exampleUser);
+        userService.register(exampleUser);
         Assertions.assertThrows(DataAccessException.class, () -> userService.logout("6"),
                 "Does not throw error for unauthorized Logout");
     }

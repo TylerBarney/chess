@@ -28,9 +28,11 @@ class GameServiceTest {
     }
     @Test
     void createGame() throws DataAccessException {
+        UserData exampleUser = new UserData("Test1", "test2", "test@test");
+        AuthData returnData = userService.register(exampleUser);
         String gameName = "Hello";
         GameData exampleGame = new GameData(gameName);
-        int returnID = gameService.createGame(gameName, "kjhlkjh");
+        int returnID = gameService.createGame(gameName, returnData.getAuthToken());
         Assertions.assertNotEquals(returnID, -1, "Game not created");
         Assertions.assertEquals(gameDAO.getGame(returnID).getGameName(), gameName, "Game names do not match");
         Assertions.assertEquals(exampleGame.getGame(),

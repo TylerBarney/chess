@@ -20,15 +20,8 @@ public class GameData {
         this.gameName = gameName;
         this.game = new ChessGame(true);
     }
-    public GameData(){
-
-    }
     public int getGameID() {
         return gameID;
-    }
-
-    public void setGameID(int gameID) {
-        this.gameID = gameID;
     }
 
     public String getWhiteUsername() {

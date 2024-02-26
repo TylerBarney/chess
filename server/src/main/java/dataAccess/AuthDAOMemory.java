@@ -27,10 +27,6 @@ public class AuthDAOMemory implements AuthDAO{
         return null;
     }
 
-    public boolean containsUser(String username){
-        return authMap.containsValue(username);
-    }
-
     public void removeAuthToken(String authToken){
         authMap.remove(authToken);
     }
