@@ -25,7 +25,7 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-        Spark.get("/hello", (req, res) -> "Hello BYU!"); //sp server can start up
+
         Spark.post("/user", this::registerHandler);
         Spark.delete("/db", (req, res) -> {userDaoMemory.clear(); authDAOMemory.clear(); gameDAOMemory.clear(); res.status(200); return "{}";});
         Spark.delete("/session", this::logoutHandler);
@@ -53,16 +53,7 @@ public class Server {
             return new Gson().toJson(authToken);
 
         } catch(Throwable ex){
-            if (ex.getMessage().equals("403")){
-                res.status(403);
-                ErrorMessage errorMessage = new ErrorMessage("Error: already taken");
-                return new Gson().toJson(errorMessage);
-            } else {
-                res.status(400);
-                ErrorMessage errorMessage = new ErrorMessage("Error: bad request");
-                return new Gson().toJson(errorMessage);
-            }
-
+            return  handleError(ex, res);
         }
     }
 
@@ -74,12 +65,7 @@ public class Server {
             return new Gson().toJson(authToken);
 
         } catch(Throwable ex){
-            if (ex.getMessage().equals("401")){
-                res.status(401);
-                ErrorMessage errorMessage = new ErrorMessage("Error: unauthorized");
-                return new Gson().toJson(errorMessage);
-            }
-            return null;
+            return  handleError(ex, res);
         }
     }
     private Object logoutHandler(Request req, Response res) throws DataAccessException {
@@ -90,12 +76,7 @@ public class Server {
             return "{}";
 
         } catch(Throwable ex){
-            if (ex.getMessage().equals("401")){
-                res.status(401);
-                ErrorMessage errorMessage = new ErrorMessage("Error: unauthorized");
-                return new Gson().toJson(errorMessage);
-            }
-            return null;
+            return  handleError(ex, res);
         }
     }
 
@@ -107,12 +88,7 @@ public class Server {
             return String.format("{ \"gameID\": %d }", gameService.createGame(gameName.gameName(), authToken));
 
         } catch(Throwable ex){
-            if (ex.getMessage().equals("401")){
-                res.status(401);
-                ErrorMessage errorMessage = new ErrorMessage("Error: unauthorized");
-                return new Gson().toJson(errorMessage);
-            }
-            return null;
+            return  handleError(ex, res);
         }
     }
     private Object listGameHandler(Request req, Response res) throws DataAccessException {
@@ -124,19 +100,7 @@ public class Server {
             return new Gson().toJson(listResponse);
 
         } catch(Throwable ex){
-            if (ex.getMessage().equals("401")){
-                res.status(401);
-                ErrorMessage errorMessage = new ErrorMessage("Error: unauthorized");
-                return new Gson().toJson(errorMessage);
-            } else if (ex.getMessage().equals("403")){
-                res.status(403);
-                ErrorMessage errorMessage = new ErrorMessage("Error: already taken");
-                return new Gson().toJson(errorMessage);
-            } else {
-                res.status(400);
-                ErrorMessage errorMessage = new ErrorMessage("Error: bad request");
-                return new Gson().toJson(errorMessage);
-            }
+            return  handleError(ex, res);
         }
     }
 
@@ -151,19 +115,23 @@ public class Server {
             return "{}";
 
         } catch(Throwable ex){
-            if (ex.getMessage().equals("401")){
-                res.status(401);
-                ErrorMessage errorMessage = new ErrorMessage("Error: unauthorized");
-                return new Gson().toJson(errorMessage);
-            }  else if (ex.getMessage().equals("403")){
-                res.status(403);
-                ErrorMessage errorMessage = new ErrorMessage("Error: already taken");
-                return new Gson().toJson(errorMessage);
-            } else {
-                res.status(400);
-                ErrorMessage errorMessage = new ErrorMessage("Error: bad request");
-                return new Gson().toJson(errorMessage);
-            }
+            return  handleError(ex, res);
+        }
+    }
+
+    private Object handleError(Throwable ex, Response res){
+        if (ex.getMessage().equals("401")){
+            res.status(401);
+            ErrorMessage errorMessage = new ErrorMessage("Error: unauthorized");
+            return new Gson().toJson(errorMessage);
+        }  else if (ex.getMessage().equals("403")){
+            res.status(403);
+            ErrorMessage errorMessage = new ErrorMessage("Error: already taken");
+            return new Gson().toJson(errorMessage);
+        } else {
+            res.status(400);
+            ErrorMessage errorMessage = new ErrorMessage("Error: bad request");
+            return new Gson().toJson(errorMessage);
         }
     }
 
