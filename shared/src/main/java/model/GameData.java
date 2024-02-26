@@ -49,9 +49,6 @@ public class GameData {
         return game;
     }
 
-    public void setGame(ChessGame game) {
-        this.game = game;
-    }
 
 
     @Override

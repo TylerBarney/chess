@@ -5,7 +5,7 @@ import chess.*;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class KingMovesCalculator extends MoveCalculator{
+public class KingMovesCalculator extends KingKnightSharedCalculator{
 
     private ChessPiece thisPiece;
     public KingMovesCalculator(ChessPiece thisPiece){
@@ -16,13 +16,7 @@ public class KingMovesCalculator extends MoveCalculator{
     public Collection<ChessMove> pieceMoves (ChessBoard board, ChessPosition myPosition){
         HashSet<ChessMove> moves = new HashSet<>();
         int[][] possibleMoves = {{1,0}, {1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}};
-        ChessPosition endPosition;
-        for (int i = 0; i < possibleMoves.length; i++){
-            endPosition = new ChessPosition(myPosition.getRow() + possibleMoves[i][0], myPosition.getColumn() + possibleMoves[i][1]);
-            if (canMove(board, endPosition, thisPiece.getTeamColor()) == 0 || canMove(board, endPosition, thisPiece.getTeamColor()) == 1){
-                moves.add(new ChessMove(myPosition, endPosition, null));
-            }
-        }
+        standardMoves(myPosition, possibleMoves, moves, board, thisPiece.getTeamColor());
 
         //castle King-side
         //king hasn't moved
