@@ -75,4 +75,54 @@ class GameServiceTest {
 
     }
 
+    @Test
+    void successfulJoinGameWhite() throws DataAccessException {
+        UserData exampleUser = new UserData("Test1", "test2", "test@test");
+        AuthData returnData = userService.register(exampleUser);
+
+        int gameID = gameService.createGame("Game1", returnData.getAuthToken());
+        gameService.joinGame("WHITE", gameID, returnData.getAuthToken());
+
+        Assertions.assertEquals(gameDAO.getGame(gameID).getWhiteUsername(), exampleUser.getUserName(), "White Players do not match");
+    }
+    @Test
+    void successfulJoinGameBlack() throws DataAccessException {
+        UserData exampleUser = new UserData("Test1", "test2", "test@test");
+        AuthData returnData = userService.register(exampleUser);
+
+        int gameID = gameService.createGame("Game1", returnData.getAuthToken());
+        gameService.joinGame("BLACK", gameID, returnData.getAuthToken());
+
+        Assertions.assertEquals(gameDAO.getGame(gameID).getBlackUsername(), exampleUser.getUserName(), "Black Players do not match");
+    }
+    @Test
+    void badAuthJoin() throws DataAccessException {
+        UserData exampleUser = new UserData("Test1", "test2", "test@test");
+        AuthData returnData = userService.register(exampleUser);
+
+        int gameID = gameService.createGame("Game1", returnData.getAuthToken());
+        Assertions.assertThrows(DataAccessException.class,
+                () -> gameService.joinGame("BLACK", gameID, "khkj"), "Didn't throw bad auth");
+    }
+
+    @Test
+    void badColorJoin() throws DataAccessException {
+        UserData exampleUser = new UserData("Test1", "test2", "test@test");
+        AuthData returnData = userService.register(exampleUser);
+
+        int gameID = gameService.createGame("Game1", returnData.getAuthToken());
+        Assertions.assertThrows(DataAccessException.class,
+                () -> gameService.joinGame("BLCK", gameID, returnData.getAuthToken()), "Didn't throw bad color");
+    }
+
+    @Test
+    void badGameJoin() throws DataAccessException {
+        UserData exampleUser = new UserData("Test1", "test2", "test@test");
+        AuthData returnData = userService.register(exampleUser);
+
+        int gameID = gameService.createGame("Game1", returnData.getAuthToken());
+        Assertions.assertThrows(DataAccessException.class,
+                () -> gameService.joinGame("BLACK", 0, returnData.getAuthToken()), "Didn't throw bad game");
+    }
+
 }
