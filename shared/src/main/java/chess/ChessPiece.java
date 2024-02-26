@@ -1,10 +1,8 @@
 package chess;
 
-import java.lang.reflect.Array;
-import java.util.*;
+import chess.moveCalculator.*;
 
-import static chess.ChessGame.TeamColor.BLACK;
-import static chess.ChessGame.TeamColor.WHITE;
+import java.util.*;
 
 /**
  * Represents a single chess piece
