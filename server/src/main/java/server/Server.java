@@ -7,14 +7,10 @@ import dataAccess.GameDAOMemory;
 import model.GameData;
 import model.UserData;
 import dataAccess.UserDAOMemory;
-import org.eclipse.jetty.server.Authentication;
-import passoffTests.testClasses.TestException;
 import service.*;
 import spark.*;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class Server {
     private UserDAOMemory userDaoMemory = new UserDAOMemory();
@@ -53,7 +49,7 @@ public class Server {
                 throw new DataAccessException("400");
             }
             var authToken = userService.register(user);
-            res.status(200); //why isn't this responding with 200 code
+            res.status(200);
             return new Gson().toJson(authToken);
 
         } catch(Throwable ex){
@@ -74,7 +70,7 @@ public class Server {
         try {
             var user = new Gson().fromJson(req.body(), LoginRequest.class);
             var authToken = userService.login(user);
-            res.status(200); //why isn't this responding with 200 code
+            res.status(200);
             return new Gson().toJson(authToken);
 
         } catch(Throwable ex){
@@ -90,7 +86,7 @@ public class Server {
         try {
             String authToken = req.headers("Authorization");
             userService.logout(authToken);
-            res.status(200); //why isn't this responding with 200 code
+            res.status(200);
             return "{}";
 
         } catch(Throwable ex){
@@ -125,8 +121,7 @@ public class Server {
             res.status(200);
             HashMap<Integer, GameData> gameList = gameService.listGames(authToken);
             ListResponse listResponse = new ListResponse(gameList.values());
-            var returned = new Gson().toJson(listResponse);
-            return returned;
+            return new Gson().toJson(listResponse);
 
         } catch(Throwable ex){
             if (ex.getMessage().equals("401")){
