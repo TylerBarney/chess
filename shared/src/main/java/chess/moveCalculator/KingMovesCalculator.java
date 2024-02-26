@@ -5,7 +5,7 @@ import chess.*;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class KingMovesCalculator implements MoveCalculator{
+public class KingMovesCalculator extends MoveCalculator{
 
     private ChessPiece thisPiece;
     public KingMovesCalculator(ChessPiece thisPiece){
@@ -19,7 +19,7 @@ public class KingMovesCalculator implements MoveCalculator{
         ChessPosition endPosition;
         for (int i = 0; i < possibleMoves.length; i++){
             endPosition = new ChessPosition(myPosition.getRow() + possibleMoves[i][0], myPosition.getColumn() + possibleMoves[i][1]);
-            if (canMove(board, endPosition) == 0 || canMove(board, endPosition) == 1){
+            if (canMove(board, endPosition, thisPiece.getTeamColor()) == 0 || canMove(board, endPosition, thisPiece.getTeamColor()) == 1){
                 moves.add(new ChessMove(myPosition, endPosition, null));
             }
         }
@@ -57,12 +57,4 @@ public class KingMovesCalculator implements MoveCalculator{
 
 
 
-    private int canMove(ChessBoard board, ChessPosition endPosition){
-        if (endPosition.getRow() <= 0 || endPosition.getRow() >= 9) return 3;
-        if (endPosition.getColumn() <= 0 || endPosition.getColumn() >= 9) return 3;
-        if (board.getPiece(endPosition) == null) return 0;
-        if (board.getPiece(endPosition).getTeamColor() == this.thisPiece.getTeamColor()) return 2;
-        if (board.getPiece(endPosition).getTeamColor() != this.thisPiece.getTeamColor()) return 1;
-        return 0;
-    }
 }

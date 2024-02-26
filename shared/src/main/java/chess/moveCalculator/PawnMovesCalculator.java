@@ -5,7 +5,7 @@ import chess.*;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class PawnMovesCalculator implements MoveCalculator{
+public class PawnMovesCalculator extends MoveCalculator{
     private ChessPiece thisPiece;
     public PawnMovesCalculator(ChessPiece thisPiece){
         this.thisPiece = thisPiece;
@@ -21,7 +21,7 @@ public class PawnMovesCalculator implements MoveCalculator{
         } else {
             endPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn());
         }
-        if (canMove(board, endPosition) == 0){
+        if (canMove(board, endPosition, thisPiece.getTeamColor()) == 0){
             standardMove(endPosition, myPosition, moves);
             if (hasntMoved(myPosition)){
                 if (thisPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
@@ -29,7 +29,7 @@ public class PawnMovesCalculator implements MoveCalculator{
                 } else {
                     endPosition = new ChessPosition(myPosition.getRow() - 2, myPosition.getColumn());
                 }
-                if (canMove(board, endPosition) == 0){
+                if (canMove(board, endPosition, thisPiece.getTeamColor()) == 0){
                     moves.add(new ChessMove(myPosition, endPosition, null));
                 }
             }
@@ -83,7 +83,7 @@ public class PawnMovesCalculator implements MoveCalculator{
         }
     }
     private void pawnAttackMove(ChessPosition endPosition, ChessPosition myPosition, HashSet<ChessMove> moves, ChessBoard board){
-        if (canMove(board, endPosition) == 1){
+        if (canMove(board, endPosition, thisPiece.getTeamColor()) == 1){
             standardMove(endPosition, myPosition, moves);
         }
     }
@@ -98,13 +98,5 @@ public class PawnMovesCalculator implements MoveCalculator{
         if (thisPiece.getTeamColor() == ChessGame.TeamColor.WHITE && endPosition.getRow() == 8) return true;
         if (thisPiece.getTeamColor() == ChessGame.TeamColor. BLACK && endPosition.getRow() == 1) return true;
         return false;
-    }
-    private int canMove(ChessBoard board, ChessPosition endPosition){
-        if (endPosition.getRow() <= 0 || endPosition.getRow() >= 9) return 3;
-        if (endPosition.getColumn() <= 0 || endPosition.getColumn() >= 9) return 3;
-        if (board.getPiece(endPosition) == null) return 0;
-        if (board.getPiece(endPosition).getTeamColor() == this.thisPiece.getTeamColor()) return 2;
-        if (board.getPiece(endPosition).getTeamColor() != this.thisPiece.getTeamColor()) return 1;
-        return 0;
     }
 }
