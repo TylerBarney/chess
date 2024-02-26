@@ -20,14 +20,7 @@ public class PawnMovesCalculator implements MoveCalculator{
             endPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn());
         }
         if (canMove(board, endPosition) == 0){
-            if (canPromote(endPosition)){
-                moves.add(new ChessMove(myPosition, endPosition, ChessPiece.PieceType.ROOK));
-                moves.add(new ChessMove(myPosition, endPosition, ChessPiece.PieceType.KNIGHT));
-                moves.add(new ChessMove(myPosition, endPosition, ChessPiece.PieceType.QUEEN));
-                moves.add(new ChessMove(myPosition, endPosition, ChessPiece.PieceType.BISHOP));
-            } else {
-                moves.add(new ChessMove(myPosition, endPosition, null));
-            }
+            standardMove(endPosition, myPosition, moves);
             if (hasntMoved(myPosition)){
                 if (thisPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
                     endPosition = new ChessPosition(myPosition.getRow() + 2, myPosition.getColumn());
@@ -46,32 +39,14 @@ public class PawnMovesCalculator implements MoveCalculator{
         } else {
             endPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 1);
         }
-        if (canMove(board, endPosition) == 1){
-            if (canPromote(endPosition)){
-                moves.add(new ChessMove(myPosition, endPosition, ChessPiece.PieceType.ROOK));
-                moves.add(new ChessMove(myPosition, endPosition, ChessPiece.PieceType.KNIGHT));
-                moves.add(new ChessMove(myPosition, endPosition, ChessPiece.PieceType.QUEEN));
-                moves.add(new ChessMove(myPosition, endPosition, ChessPiece.PieceType.BISHOP));
-            } else {
-                moves.add(new ChessMove(myPosition, endPosition, null));
-            }
-        }
+        pawnAttackMove(endPosition, myPosition, moves, board);
         //up left
         if (thisPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
             endPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1);
         } else {
             endPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1);
         }
-        if (canMove(board, endPosition) == 1){
-            if (canPromote(endPosition)){
-                moves.add(new ChessMove(myPosition, endPosition, ChessPiece.PieceType.ROOK));
-                moves.add(new ChessMove(myPosition, endPosition, ChessPiece.PieceType.KNIGHT));
-                moves.add(new ChessMove(myPosition, endPosition, ChessPiece.PieceType.QUEEN));
-                moves.add(new ChessMove(myPosition, endPosition, ChessPiece.PieceType.BISHOP));
-            } else {
-                moves.add(new ChessMove(myPosition, endPosition, null));
-            }
-        }
+        pawnAttackMove(endPosition, myPosition, moves, board);
         //enPassant right
         if (thisPiece.isRightEnPassant()){
             if (thisPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
@@ -93,6 +68,22 @@ public class PawnMovesCalculator implements MoveCalculator{
             }
         }
         return moves;
+    }
+
+    private void standardMove(ChessPosition endPosition, ChessPosition myPosition, HashSet<ChessMove> moves){
+        if (canPromote(endPosition)){
+            moves.add(new ChessMove(myPosition, endPosition, ChessPiece.PieceType.ROOK));
+            moves.add(new ChessMove(myPosition, endPosition, ChessPiece.PieceType.KNIGHT));
+            moves.add(new ChessMove(myPosition, endPosition, ChessPiece.PieceType.QUEEN));
+            moves.add(new ChessMove(myPosition, endPosition, ChessPiece.PieceType.BISHOP));
+        } else {
+            moves.add(new ChessMove(myPosition, endPosition, null));
+        }
+    }
+    private void pawnAttackMove(ChessPosition endPosition, ChessPosition myPosition, HashSet<ChessMove> moves, ChessBoard board){
+        if (canMove(board, endPosition) == 1){
+            standardMove(endPosition, myPosition, moves);
+        }
     }
 
     private boolean hasntMoved(ChessPosition myPosition){
