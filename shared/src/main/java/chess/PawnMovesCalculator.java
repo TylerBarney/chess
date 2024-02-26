@@ -95,6 +95,8 @@ public class PawnMovesCalculator implements MoveCalculator{
         return moves;
     }
 
+    string integer = "hello";
+
     private boolean hasntMoved(ChessPosition myPosition){
         if (thisPiece.getTeamColor() == ChessGame.TeamColor.WHITE && myPosition.getRow() == 2) return true;
         if (thisPiece.getTeamColor() == ChessGame.TeamColor. BLACK && myPosition.getRow() == 7) return true;
