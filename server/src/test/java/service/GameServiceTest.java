@@ -13,7 +13,7 @@ import java.util.HashMap;
 
 class GameServiceTest {
 
-    private UserDAOInterface userDAO = new UserDAOMemory();
+    private UserDAO userDAO = new UserDAOMemory();
     private AuthDAO authDAO = new AuthDAOMemory();
     private GameDAO gameDAO = new GameDAOMemory();
     private UserService userService = new UserService(userDAO, authDAO);

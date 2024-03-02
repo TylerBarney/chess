@@ -4,13 +4,13 @@ import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
-import dataAccess.UserDAOInterface;
+import dataAccess.UserDAO;
 
 public class UserService {
 
-    UserDAOInterface userDAO;
+    UserDAO userDAO;
     AuthDAO authDAO;
-    public UserService(UserDAOInterface userDAO, AuthDAO authDAO){
+    public UserService(UserDAO userDAO, AuthDAO authDAO){
         this.userDAO = userDAO;
         this.authDAO = authDAO;
     }

@@ -21,8 +21,9 @@ public class UserData {
         return password;
     }
 
-
-
+    public String getEmail() {
+        return email;
+    }
 
     public boolean isComplete(){
         if (email == null || password == null || username == null){

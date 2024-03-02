@@ -1,21 +1,18 @@
 package server;
 
 import com.google.gson.Gson;
-import dataAccess.AuthDAOMemory;
-import dataAccess.DataAccessException;
-import dataAccess.GameDAOMemory;
+import dataAccess.*;
 import model.GameData;
 import model.UserData;
-import dataAccess.UserDAOMemory;
 import service.*;
 import spark.*;
 
 import java.util.HashMap;
 
 public class Server {
-    private UserDAOMemory userDaoMemory = new UserDAOMemory();
-    private AuthDAOMemory authDAOMemory = new AuthDAOMemory();
-    private GameDAOMemory gameDAOMemory = new GameDAOMemory();
+    private UserDAO userDaoMemory = new UserDAOMemory();
+    private AuthDAO authDAOMemory = new AuthDAOMemory();
+    private GameDAO gameDAOMemory = new GameDAOMemory();
     private UserService userService = new UserService(userDaoMemory, authDAOMemory);
     private GameService gameService = new GameService(gameDAOMemory, authDAOMemory);
 

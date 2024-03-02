@@ -4,15 +4,12 @@ import dataAccess.*;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class UserServiceTest {
 
-    private UserDAOInterface userDAO = new UserDAOMemory();
+    private UserDAO userDAO = new UserDAOMemory();
     private AuthDAO authDAO = new AuthDAOMemory();
     private UserService userService = new UserService(userDAO, authDAO);
     @BeforeEach

@@ -22,7 +22,6 @@ public class MySqlDataAccess {
                 `authToken` varchar(256) NOT NULL,
                 `username` varchar(256) NOT NULL,
                 PRIMARY KEY (`authToken`),
-                FOREIGN KEY (`username`) REFERENCES users(`username`),
                 INDEX(`authToken`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
@@ -34,13 +33,11 @@ public class MySqlDataAccess {
                 `blackUsername` varchar(256) NULL,
                 `game` TEXT DEFAULT NULL,
                 PRIMARY KEY (`gameID`),
-                FOREIGN KEY (`whiteUsername`) REFERENCES users(`username`),
-                FOREIGN KEY (`blackUsername`) REFERENCES users(`username`),
                 INDEX(`gameID`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
-    private void configureDatabase() throws DataAccessException, SQLException {
+    void configureDatabase() throws DataAccessException, SQLException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statment : createStatements) {
