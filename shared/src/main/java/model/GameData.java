@@ -27,6 +27,15 @@ public class GameData {
         this.blackUsername = blackUsername;
         this.game = game;
     }
+
+    public GameData(int gameID, String gameName, String whiteUsername, String blackUsername, ChessGame game) {
+        this.gameName = gameName;
+        this.whiteUsername = whiteUsername;
+        this.blackUsername = blackUsername;
+        this.game = game;
+        this.gameID = gameID;
+    }
+
     public int getGameID() {
         return gameID;
     }

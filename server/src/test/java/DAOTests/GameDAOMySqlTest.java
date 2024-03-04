@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,6 +20,19 @@ class GameDAOMySqlTest {
     GameDAOMySqlTest() throws SQLException, DataAccessException {
     }
 
+    int tableSize(){
+        try (var conn = DatabaseManager.getConnection()){
+            try(var preparedStatment = conn.prepareStatement("SELECT COUNT(0) FROM games")){
+                var response = preparedStatment.executeQuery();
+                response.next();
+                return response.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
     boolean isInTable(GameData gameData){
         try (var conn = DatabaseManager.getConnection()){
             String preparedStatement = "SELECT * FROM games WHERE gameName = ? AND whiteUsername ";
@@ -74,14 +88,32 @@ class GameDAOMySqlTest {
     }
 
     @Test
-    void getGame() {
+    void getGame() throws DataAccessException {
+        int gameID = gameDAOMySql.createGame("testGame");
+        GameData gameData = new GameData(gameID,"testGame", null, null, new ChessGame(true));
+        GameData responseData = gameDAOMySql.getGame(gameID);
+        Assertions.assertEquals(gameData, responseData, "Did not get right game");
     }
 
     @Test
-    void listGames() {
+    void listGames() throws DataAccessException {
+        HashMap<Integer, GameData> gameList = new HashMap<>();
+        int gameID1 = gameDAOMySql.createGame("game1");
+        int gameID2 = gameDAOMySql.createGame("game2");
+        int gameID3 = gameDAOMySql.createGame("game3");
+        gameList.put(gameID1, new GameData(gameID1, "game1", null, null, new ChessGame(true)));
+        gameList.put(gameID2, new GameData(gameID2, "game2", null, null, new ChessGame(true)));
+        gameList.put(gameID3, new GameData(gameID3, "game3", null, null, new ChessGame(true)));
+        var responseList = gameDAOMySql.listGames();
+        Assertions.assertEquals(gameList, responseList, "Lists are not equal");
     }
 
     @Test
-    void clear() {
+    void clear() throws DataAccessException {
+        int gameID1 = gameDAOMySql.createGame("game1");
+        int gameID2 = gameDAOMySql.createGame("game2");
+        int gameID3 = gameDAOMySql.createGame("game3");
+        gameDAOMySql.clear();
+        Assertions.assertEquals(0, tableSize(), "Table is not clear");
     }
 }
