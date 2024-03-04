@@ -54,6 +54,10 @@ public class GameService  {
         }else {
             throw new DataAccessException("400");
         }
-
+        gameDAO.update(gameData);
+    }
+    public void clear(){
+        gameDAO.clear();
+        authDAO.clear();
     }
 }

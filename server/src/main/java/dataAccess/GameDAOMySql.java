@@ -103,4 +103,27 @@ public class GameDAOMySql extends MySqlDataAccess implements GameDAO{
         }
 
     }
+
+    @Override
+    public void update(GameData gameData) {
+        int gameID = gameData.getGameID();
+        String gameName = gameData.getGameName();
+        String whiteUsername = gameData.getWhiteUsername();
+        String blackUsername = gameData.getBlackUsername();
+        ChessGame game = gameData.getGame();
+        try (var conn = DatabaseManager.getConnection()){
+            try(var preparedStatement = conn.prepareStatement("UPDATE games SET gameName = ?, whiteUsername = ?, blackUsername = ?, game = ? WHERE gameID = ?")){
+                preparedStatement.setString(1, gameName);
+                preparedStatement.setString(2, whiteUsername);
+                preparedStatement.setString(3, blackUsername);
+                preparedStatement.setString(4, new Gson().toJson(game));
+                preparedStatement.setInt(5, gameID);
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

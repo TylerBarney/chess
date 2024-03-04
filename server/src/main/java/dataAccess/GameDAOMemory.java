@@ -32,4 +32,9 @@ public class GameDAOMemory implements GameDAO{
     public void clear() {
         gameList.clear();
     }
+
+    @Override
+    public void update(GameData gameData) {
+
+    }
 }

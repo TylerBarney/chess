@@ -31,14 +31,15 @@ public class UserDAOMySql extends MySqlDataAccess implements UserDAO {
             try(var preparedStatment = conn.prepareStatement("SELECT username, password, email FROM users WHERE username = ?")){
                 preparedStatment.setString(1, userName);
                 try(var rs = preparedStatment.executeQuery()){
-                    String username = "";
-                    String password = "";
-                    String email = "";
+                    String username = null;
+                    String password = null;
+                    String email = null;
                     while (rs.next()){
                         username = rs.getString("username");
                         password = rs.getString("password");
                         email = rs.getString("email");
                     }
+                    if (username == null || password == null || email == null) return null;
                     return new UserData(username, password, email);
                 }
             }

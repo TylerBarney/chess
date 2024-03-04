@@ -7,14 +7,18 @@ import model.UserData;
 import service.*;
 import spark.*;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 
 public class Server {
     private UserDAO userDaoMemory = new UserDAOMemory();
     private AuthDAO authDAOMemory = new AuthDAOMemory();
     private GameDAO gameDAOMemory = new GameDAOMemory();
-    private UserService userService = new UserService(userDaoMemory, authDAOMemory);
-    private GameService gameService = new GameService(gameDAOMemory, authDAOMemory);
+    private UserService userService = new UserService(new UserDAOMySql(), new AuthDAOMySql());
+    private GameService gameService = new GameService(new GameDAOMySql(), new AuthDAOMySql());
+
+    public Server() throws SQLException, DataAccessException {
+    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -24,7 +28,7 @@ public class Server {
         // Register your endpoints and handle exceptions here.
 
         Spark.post("/user", this::registerHandler);
-        Spark.delete("/db", (req, res) -> {userDaoMemory.clear(); authDAOMemory.clear(); gameDAOMemory.clear(); res.status(200); return "{}";});
+        Spark.delete("/db", (req, res) -> {userService.clear(); gameService.clear(); res.status(200); return "{}";});
         Spark.delete("/session", this::logoutHandler);
         Spark.post("/session", this::loginHandler);
         Spark.post("/game", this::createGameHandler);

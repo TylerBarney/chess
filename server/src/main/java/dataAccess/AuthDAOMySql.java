@@ -28,10 +28,11 @@ public class AuthDAOMySql extends MySqlDataAccess implements AuthDAO{
             try(var preparedStatement = conn.prepareStatement("SELECT username FROM auths WHERE authToken = ?")){
                 preparedStatement.setString(1, authToken);
                 try (var rs = preparedStatement.executeQuery()){
-                    String username = "";
+                    String username = null;
                     while(rs.next()){
                         username = rs.getString("username");
                     }
+                    if (username == null) return null;
                     return new AuthData(username, authToken);
                 }
             }
