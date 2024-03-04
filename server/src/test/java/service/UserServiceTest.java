@@ -45,7 +45,7 @@ class UserServiceTest {
     @Test
     void successfulLogin() throws DataAccessException {
         UserData exampleUser = new UserData("test1", "test2", "test@test");
-        LoginRequest exampleLogin = new LoginRequest(exampleUser.getUserName(), exampleUser.getPassword());
+        LoginRequest exampleLogin = new LoginRequest(exampleUser.getUserName(), "test2");
         userService.register(exampleUser);
         AuthData returnData = userService.login(exampleLogin);
         Assertions.assertNotNull(returnData, "No Data Returned");
@@ -68,7 +68,7 @@ class UserServiceTest {
     @Test
     void successfulLogOut() throws DataAccessException {
         UserData exampleUser = new UserData("test1", "test2", "test@test");
-        LoginRequest exampleLogin = new LoginRequest(exampleUser.getUserName(), exampleUser.getPassword());
+        LoginRequest exampleLogin = new LoginRequest(exampleUser.getUserName(), "test2");
         userService.register(exampleUser);
         AuthData authData = userService.login(exampleLogin);
         userService.logout(authData.getAuthToken());

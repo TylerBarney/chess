@@ -7,6 +7,7 @@ import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -21,7 +22,7 @@ class UserDAOMySqlTest {
     }
 
 
-    boolean isInTable(UserData userData){
+    boolean isInTable(UserData userData, String givenPassword){
         try (var conn = DatabaseManager.getConnection()){
             try(var preparedStatment = conn.prepareStatement("SELECT username, password, email FROM users WHERE username = ? AND password = ? AND email = ?")){
                 preparedStatment.setString(1, userData.getUserName());
@@ -36,7 +37,12 @@ class UserDAOMySqlTest {
                         password = rs.getString("password");
                         email = rs.getString("email");
                     }
-                    UserData responseData = new UserData(username, password, email);
+                    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                    if (!encoder.matches(givenPassword, password)){
+                        return false;
+                    }
+                    UserData responseData = new UserData(username, givenPassword, email);
+                    userData.setPassword(givenPassword);
                     if (responseData.equals(userData)) return true;
                 }
             }
@@ -79,7 +85,7 @@ class UserDAOMySqlTest {
     void createUser() throws SQLException, DataAccessException {
         UserData userData = new UserData("username", "password", "email");
         userDAOMySql.createUser(userData);
-        Assertions.assertTrue(isInTable(userData), "user is not in table");
+        Assertions.assertTrue(isInTable(userData, "password"), "user is not in table");
     }
 
     @Test

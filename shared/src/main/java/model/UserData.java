@@ -1,5 +1,7 @@
 package model;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import java.util.Objects;
 
 public class UserData {
@@ -9,7 +11,9 @@ public class UserData {
 
     public UserData(String username, String password, String email){
         this.username = username;
-        this.password = password;
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hashedPassword = encoder.encode(password);
+        this.password = hashedPassword;
         this.email = email;
     }
 
@@ -19,6 +23,10 @@ public class UserData {
 
     public String getPassword() {
         return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getEmail() {
@@ -37,7 +45,8 @@ public class UserData {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserData user = (UserData) o;
-        return Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(email, user.email);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        return Objects.equals(username, user.username) && (encoder.matches(password, user.password) || encoder.matches(user.password, password)) && Objects.equals(email, user.email);
     }
 
     @Override

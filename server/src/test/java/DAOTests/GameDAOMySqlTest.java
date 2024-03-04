@@ -8,6 +8,7 @@ import dataAccess.GameDAOMySql;
 import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -80,6 +81,19 @@ class GameDAOMySqlTest {
         return false;
     }
     GameDAOMySql gameDAOMySql = new GameDAOMySql();
+
+    @BeforeEach
+    void setUp(){
+        try (var conn = DatabaseManager.getConnection()){
+            try(var preparedStatment = conn.prepareStatement("TRUNCATE TABLE games")){
+                preparedStatment.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
     @Test
     void createGame() throws DataAccessException {
         gameDAOMySql.createGame("testGame");
