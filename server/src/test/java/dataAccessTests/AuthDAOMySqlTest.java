@@ -1,4 +1,4 @@
-package DAOTests;
+package dataAccessTests;
 
 import dataAccess.sqlDAOs.AuthDAOMySql;
 import dataAccess.DataAccessException;

@@ -1,4 +1,4 @@
-package DAOTests;
+package dataAccessTests;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
