@@ -10,17 +10,30 @@ import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 class UserServiceTest {
 
-    private UserDAO userDAO = new UserDAOMemory();
-    private AuthDAO authDAO = new AuthDAOMemory();
+    private UserDAO userDAO = new UserDAOMySql();
+    private AuthDAO authDAO = new AuthDAOMySql();
     private UserService userService = new UserService(userDAO, authDAO);
+
+    UserServiceTest() throws DataAccessException {
+    }
+
+    boolean areUsersEqual(UserData user1, UserData user2){
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if (user1.isComplete() && user2.isComplete()){
+            if (user1.getUserName().equals(user2.getUserName()) && user1.getEmail().equals(user2.getEmail()) && (encoder.matches(user1.getPassword(), user2.getPassword()) || encoder.matches(user2.getPassword(), user1.getPassword()))){
+                return true;
+            }
+        }
+        return false;
+    }
     @BeforeEach
     public void setUp(){
-        userDAO = new UserDAOMemory();
-        authDAO = new AuthDAOMemory();
-        userService = new UserService(userDAO, authDAO);
+        userDAO.clear();
+        authDAO.clear();
     }
 
     @Test
@@ -31,7 +44,7 @@ class UserServiceTest {
         Assertions.assertNotNull(returnData.getAuthToken(), "No authToken returned");
         Assertions.assertNotNull(returnData.getUserName(), "No username returned");
         Assertions.assertEquals(returnData.getUserName(), exampleUser.getUserName(), "Username does not match");
-        Assertions.assertEquals(userDAO.getUser(exampleUser.getUserName()), exampleUser,"UserData not added to UserDAO");
+        Assertions.assertTrue(areUsersEqual(userDAO.getUser(exampleUser.getUserName()), exampleUser),"UserData not added to UserDAO");
         Assertions.assertNotNull(authDAO.checkAuthToken(returnData.getAuthToken()), "AuthData not added to AuthDAO");
     }
     @Test

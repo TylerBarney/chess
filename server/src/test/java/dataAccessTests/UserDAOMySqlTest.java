@@ -17,14 +17,20 @@ class UserDAOMySqlTest {
 
     UserDAOMySqlTest() throws SQLException, DataAccessException {
     }
-
-
-    boolean isInTable(UserData userData, String givenPassword){
+    boolean areUsersEqual(UserData user1, UserData user2){
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if (user1.isComplete() && user2.isComplete()){
+            if (user1.getUserName().equals(user2.getUserName()) && user1.getEmail().equals( user2.getEmail())){
+                if (encoder.matches(user1.getPassword(), user2.getPassword()) || encoder.matches(user2.getPassword(), user1.getPassword())) return true;
+            }
+        }
+        return false;
+    }
+    boolean isInTable(UserData userData){
         try (var conn = DatabaseManager.getConnection()){
-            try(var preparedStatment = conn.prepareStatement("SELECT username, password, email FROM users WHERE username = ? AND password = ? AND email = ?")){
+            try(var preparedStatment = conn.prepareStatement("SELECT username, password, email FROM users WHERE username = ? AND email = ?")){
                 preparedStatment.setString(1, userData.getUserName());
-                preparedStatment.setString(2, userData.getPassword());
-                preparedStatment.setString(3, userData.getEmail());
+                preparedStatment.setString(2, userData.getEmail());
                 try(var rs = preparedStatment.executeQuery()){
                     String username = "";
                     String password = "";
@@ -34,13 +40,8 @@ class UserDAOMySqlTest {
                         password = rs.getString("password");
                         email = rs.getString("email");
                     }
-                    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-                    if (!encoder.matches(givenPassword, password)){
-                        return false;
-                    }
-                    UserData responseData = new UserData(username, givenPassword, email);
-                    userData.setPassword(givenPassword);
-                    if (responseData.equals(userData)) return true;
+                    UserData responseData = new UserData(username, password, email);
+                    if (areUsersEqual(responseData, userData)) return true;
                 }
             }
         } catch (SQLException e) {
@@ -79,10 +80,10 @@ class UserDAOMySqlTest {
         }
     }
     @Test
-    void createUser() throws SQLException, DataAccessException {
+    void createUser() throws DataAccessException {
         UserData userData = new UserData("username", "password", "email");
         userDAOMySql.createUser(userData);
-        Assertions.assertTrue(isInTable(userData, "password"), "user is not in table");
+        Assertions.assertTrue(isInTable(userData), "user is not in table");
     }
 
     @Test
@@ -97,7 +98,7 @@ class UserDAOMySqlTest {
         UserData userData = new UserData("username", "password", "email");
         userDAOMySql.createUser(userData);
         UserData responseData = userDAOMySql.getUser(userData.getUserName());
-        Assertions.assertEquals(userData, responseData, "User datas do not match up");
+        Assertions.assertTrue(areUsersEqual(userData, responseData), "User datas do not match up");
     }
     @Test
     void getBadUser() throws SQLException, DataAccessException {

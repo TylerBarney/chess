@@ -19,18 +19,20 @@ import java.util.HashMap;
 
 class GameServiceTest {
 
-    private UserDAO userDAO = new UserDAOMemory();
-    private AuthDAO authDAO = new AuthDAOMemory();
-    private GameDAO gameDAO = new GameDAOMemory();
+    private UserDAO userDAO = new UserDAOMySql();
+    private AuthDAO authDAO = new AuthDAOMySql();
+    private GameDAO gameDAO = new GameDAOMySql();
     private UserService userService = new UserService(userDAO, authDAO);
     private GameService gameService = new GameService(gameDAO, authDAO);
+
+    GameServiceTest() throws DataAccessException {
+    }
+
     @BeforeEach
     public void setUp(){
-        userDAO = new UserDAOMemory();
-        authDAO = new AuthDAOMemory();
-        userService = new UserService(userDAO, authDAO);
-        gameDAO = new GameDAOMemory();
-        gameService = new GameService(gameDAO, authDAO);
+        userDAO.clear();
+        authDAO.clear();
+        gameDAO.clear();
     }
     @Test
     void createGame() throws DataAccessException {

@@ -19,9 +19,6 @@ import spark.*;
 import java.util.HashMap;
 
 public class Server {
-    private UserDAO userDaoMemory = new UserDAOMemory();
-    private AuthDAO authDAOMemory = new AuthDAOMemory();
-    private GameDAO gameDAOMemory = new GameDAOMemory();
     private UserService userService;
     private GameService gameService;
 

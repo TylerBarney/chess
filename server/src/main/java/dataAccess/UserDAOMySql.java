@@ -2,6 +2,7 @@ package dataAccess;
 
 import dataAccess.DAOInterfaces.UserDAO;
 import model.UserData;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.sql.SQLException;
 
@@ -12,10 +13,12 @@ public class UserDAOMySql extends MySqlDataAccess implements UserDAO {
 
     @Override
     public void createUser(UserData user) throws DataAccessException {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hashedPassword = encoder.encode(user.getPassword());
         try (var conn = DatabaseManager.getConnection()){
             try (var preparedStatement = conn.prepareStatement("INSERT INTO users (username, password, email) VALUES (?, ?, ?)")){
                 preparedStatement.setString(1, user.getUserName());
-                preparedStatement.setString(2, user.getPassword());
+                preparedStatement.setString(2, hashedPassword);
                 preparedStatement.setString(3, user.getEmail());
                 preparedStatement.executeUpdate();
             }
