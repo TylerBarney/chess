@@ -2,12 +2,13 @@ package dataAccess.sqlDAOs;
 
 import dataAccess.DAOInterfaces.UserDAO;
 import dataAccess.DataAccessException;
+import dataAccess.DatabaseManager;
 import model.UserData;
 
 import java.sql.SQLException;
 
 public class UserDAOMySql extends MySqlDataAccess implements UserDAO {
-    public UserDAOMySql() throws SQLException, DataAccessException {
+    public UserDAOMySql() throws DataAccessException {
         configureDatabase();
     }
 

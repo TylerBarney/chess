@@ -2,12 +2,13 @@ package dataAccess.sqlDAOs;
 
 import dataAccess.DAOInterfaces.AuthDAO;
 import dataAccess.DataAccessException;
+import dataAccess.DatabaseManager;
 import model.AuthData;
 
 import java.sql.SQLException;
 
 public class AuthDAOMySql extends MySqlDataAccess implements AuthDAO {
-    public AuthDAOMySql() throws SQLException, DataAccessException {
+    public AuthDAOMySql() throws DataAccessException {
         configureDatabase();
     }
 
@@ -39,10 +40,10 @@ public class AuthDAOMySql extends MySqlDataAccess implements AuthDAO {
                 }
             }
 
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
+        } catch (SQLException e) {
+            return null;
         }
     }
 

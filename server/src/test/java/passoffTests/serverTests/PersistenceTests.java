@@ -1,7 +1,6 @@
 package passoffTests.serverTests;
 
 import chess.ChessGame;
-import dataAccess.DataAccessException;
 import org.junit.jupiter.api.*;
 import passoffTests.obfuscatedTestClasses.TestServerFacade;
 import passoffTests.testClasses.TestException;
@@ -22,7 +21,7 @@ public class PersistenceTests {
 
 
     @BeforeAll
-    public static void init() throws SQLException, DataAccessException {
+    public static void init() {
         startServer();
         serverFacade.clear();
     }
@@ -32,7 +31,7 @@ public class PersistenceTests {
         server.stop();
     }
 
-    public static void startServer() throws SQLException, DataAccessException {
+    public static void startServer() {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
@@ -42,7 +41,7 @@ public class PersistenceTests {
 
     @Test
     @DisplayName("Persistence Test")
-    public void persistenceTest() throws TestException, SQLException, DataAccessException {
+    public void persistenceTest() throws TestException {
         var initialRowCount = getDatabaseRows();
 
         TestModels.TestRegisterRequest registerRequest = new TestModels.TestRegisterRequest();
@@ -93,7 +92,7 @@ public class PersistenceTests {
     private int getDatabaseRows() {
         int rows = 0;
         try {
-            Class<?> clazz = Class.forName("dataAccess.sqlDAOs.DatabaseManager");
+            Class<?> clazz = Class.forName("dataAccess.DatabaseManager");
             Method getConnectionMethod = clazz.getDeclaredMethod("getConnection");
             getConnectionMethod.setAccessible(true);
 
@@ -112,7 +111,7 @@ public class PersistenceTests {
 
             }
         } catch (Exception ex) {
-            Assertions.fail("Unable to load database in order to verify persistence. Are you using dataAccess.sqlDAOs.DatabaseManager to set your credentials?");
+            Assertions.fail("Unable to load database in order to verify persistence. Are you using dataAccess.DatabaseManager to set your credentials?");
         }
 
         return rows;

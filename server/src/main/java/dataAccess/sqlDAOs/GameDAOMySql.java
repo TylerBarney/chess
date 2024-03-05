@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import dataAccess.DAOInterfaces.GameDAO;
 import dataAccess.DataAccessException;
+import dataAccess.DatabaseManager;
 import model.GameData;
 
 import java.sql.SQLException;
@@ -11,7 +12,7 @@ import java.sql.Statement;
 import java.util.HashMap;
 
 public class GameDAOMySql extends MySqlDataAccess implements GameDAO {
-    public GameDAOMySql() throws SQLException, DataAccessException {
+    public GameDAOMySql() throws DataAccessException {
     }
 
     @Override

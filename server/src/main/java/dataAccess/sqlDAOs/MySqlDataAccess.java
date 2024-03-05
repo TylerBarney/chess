@@ -1,11 +1,10 @@
 package dataAccess.sqlDAOs;
 
 import dataAccess.DataAccessException;
-
-import java.sql.SQLException;
+import dataAccess.DatabaseManager;
 
 public class MySqlDataAccess {
-    public MySqlDataAccess() throws SQLException, DataAccessException {
+    public MySqlDataAccess() throws DataAccessException {
         configureDatabase();
     }
 
@@ -39,7 +38,7 @@ public class MySqlDataAccess {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
-    void configureDatabase() throws DataAccessException, SQLException {
+    void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statment : createStatements) {
@@ -47,6 +46,8 @@ public class MySqlDataAccess {
                     preparedStatement.executeUpdate();
                 }
             }
+        } catch (Throwable e){
+            throw new DataAccessException("500");
         }
     }
 }

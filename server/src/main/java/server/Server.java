@@ -23,10 +23,10 @@ public class Server {
     private UserDAO userDaoMemory = new UserDAOMemory();
     private AuthDAO authDAOMemory = new AuthDAOMemory();
     private GameDAO gameDAOMemory = new GameDAOMemory();
-    private UserService userService = new UserService(new UserDAOMySql(), new AuthDAOMySql());
-    private GameService gameService = new GameService(new GameDAOMySql(), new AuthDAOMySql());
+    private UserService userService;
+    private GameService gameService;
 
-    public Server() throws SQLException, DataAccessException {
+    public Server() {
     }
 
     public int run(int desiredPort) {
@@ -35,6 +35,12 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
+        try{
+            userService = new UserService(new UserDAOMySql(), new AuthDAOMySql());
+            gameService = new GameService(new GameDAOMySql(), new AuthDAOMySql());
+        } catch (Throwable ex){
+            return -1;
+        }
 
         Spark.post("/user", this::registerHandler);
         Spark.delete("/db", (req, res) -> {userService.clear(); gameService.clear(); res.status(200); return "{}";});
@@ -52,7 +58,7 @@ public class Server {
         Spark.awaitStop();
     }
 
-    private Object registerHandler(Request req, Response res) throws DataAccessException {
+    private Object registerHandler(Request req, Response res) {
         try {
             var user = new Gson().fromJson(req.body(), UserData.class);
             if (!user.isComplete()){
@@ -67,7 +73,7 @@ public class Server {
         }
     }
 
-    private Object loginHandler(Request req, Response res) throws DataAccessException {
+    private Object loginHandler(Request req, Response res) {
         try {
             var user = new Gson().fromJson(req.body(), LoginRequest.class);
             var authToken = userService.login(user);
@@ -78,7 +84,7 @@ public class Server {
             return  handleError(ex, res);
         }
     }
-    private Object logoutHandler(Request req, Response res) throws DataAccessException {
+    private Object logoutHandler(Request req, Response res) {
         try {
             String authToken = req.headers("Authorization");
             userService.logout(authToken);
@@ -90,7 +96,7 @@ public class Server {
         }
     }
 
-    private Object createGameHandler(Request req, Response res) throws DataAccessException {
+    private Object createGameHandler(Request req, Response res) {
         try {
             var gameName = new Gson().fromJson(req.body(), CreateGameRequest.class);
             String authToken = req.headers("Authorization");
@@ -101,7 +107,7 @@ public class Server {
             return  handleError(ex, res);
         }
     }
-    private Object listGameHandler(Request req, Response res) throws DataAccessException {
+    private Object listGameHandler(Request req, Response res) {
         try {
             String authToken = req.headers("Authorization");
             res.status(200);
@@ -114,7 +120,7 @@ public class Server {
         }
     }
 
-    private Object joinGameHandler(Request req, Response res) throws DataAccessException {
+    private Object joinGameHandler(Request req, Response res) {
         try {
             JoinRequest joinData = new Gson().fromJson(req.body(), JoinRequest.class);
             String authToken = req.headers("Authorization");
