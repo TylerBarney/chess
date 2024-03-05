@@ -8,15 +8,14 @@ import dataAccess.DAOInterfaces.UserDAO;
 import dataAccess.memoryDAO.AuthDAOMemory;
 import dataAccess.memoryDAO.GameDAOMemory;
 import dataAccess.memoryDAO.UserDAOMemory;
-import dataAccess.sqlDAOs.AuthDAOMySql;
-import dataAccess.sqlDAOs.GameDAOMySql;
-import dataAccess.sqlDAOs.UserDAOMySql;
+import dataAccess.AuthDAOMySql;
+import dataAccess.GameDAOMySql;
+import dataAccess.UserDAOMySql;
 import model.GameData;
 import model.UserData;
 import service.*;
 import spark.*;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 
 public class Server {

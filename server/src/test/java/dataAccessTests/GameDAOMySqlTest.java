@@ -4,7 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import dataAccess.DatabaseManager;
-import dataAccess.sqlDAOs.GameDAOMySql;
+import dataAccess.GameDAOMySql;
 import model.GameData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,8 +1,6 @@
-package dataAccess.sqlDAOs;
+package dataAccess;
 
 import dataAccess.DAOInterfaces.AuthDAO;
-import dataAccess.DataAccessException;
-import dataAccess.DatabaseManager;
 import model.AuthData;
 
 import java.sql.SQLException;

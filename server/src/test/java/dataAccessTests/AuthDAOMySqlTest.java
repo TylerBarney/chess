@@ -1,6 +1,6 @@
 package dataAccessTests;
 
-import dataAccess.sqlDAOs.AuthDAOMySql;
+import dataAccess.AuthDAOMySql;
 import dataAccess.DataAccessException;
 import dataAccess.DatabaseManager;
 import model.AuthData;
