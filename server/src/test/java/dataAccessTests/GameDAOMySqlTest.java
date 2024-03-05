@@ -138,6 +138,22 @@ class GameDAOMySqlTest {
     }
 
     @Test
+    void updateGame() throws DataAccessException {
+        int gameID = gameDAOMySql.createGame("game1");
+        GameData gameData = gameDAOMySql.getGame(gameID);
+        gameData.setWhiteUsername("whiteUsername");
+        gameDAOMySql.update(gameData);
+        Assertions.assertEquals(gameData, gameDAOMySql.getGame(gameID), "White username not updated");
+    }
+    @Test
+    void badUpdateGame() throws DataAccessException {
+        int gameID = gameDAOMySql.createGame("game1");
+        GameData gameData = gameDAOMySql.getGame(gameID);
+        gameData.setWhiteUsername("whiteUsername");
+        Assertions.assertThrows(Throwable.class, () -> gameDAOMySql.update(null), "Does not throw error");
+    }
+
+    @Test
     void clear() throws DataAccessException {
         int gameID1 = gameDAOMySql.createGame("game1");
         int gameID2 = gameDAOMySql.createGame("game2");
