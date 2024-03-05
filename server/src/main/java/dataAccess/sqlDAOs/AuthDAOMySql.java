@@ -1,10 +1,12 @@
-package dataAccess;
+package dataAccess.sqlDAOs;
 
+import dataAccess.DAOInterfaces.AuthDAO;
+import dataAccess.DataAccessException;
 import model.AuthData;
 
 import java.sql.SQLException;
 
-public class AuthDAOMySql extends MySqlDataAccess implements AuthDAO{
+public class AuthDAOMySql extends MySqlDataAccess implements AuthDAO {
     public AuthDAOMySql() throws SQLException, DataAccessException {
         configureDatabase();
     }

@@ -1,5 +1,6 @@
-package dataAccess;
+package dataAccess.DAOInterfaces;
 
+import dataAccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
 

@@ -1,13 +1,13 @@
-package dataAccess;
+package DAOTests;
 
+import dataAccess.sqlDAOs.AuthDAOMySql;
+import dataAccess.DataAccessException;
+import dataAccess.sqlDAOs.DatabaseManager;
 import model.AuthData;
-import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class AuthDAOMySqlTest {
 
@@ -62,11 +62,25 @@ class AuthDAOMySqlTest {
     }
 
     @Test
+    void badAddAuthToken() throws DataAccessException {
+        AuthData authData = new AuthData(null);
+        Assertions.assertThrows(Throwable.class,() -> authDAOMySql.addAuthToken(authData), "Did not throw error");
+    }
+
+    @Test
     void checkAuthToken() throws DataAccessException {
         AuthData authData = new AuthData("Test1");
         authDAOMySql.addAuthToken(authData);
         var responseData = authDAOMySql.checkAuthToken(authData.getAuthToken());
         Assertions.assertEquals(authData, responseData, "Does not return correct data");
+    }
+
+    @Test
+    void badCheckAuthToken() throws DataAccessException {
+        AuthData authData = new AuthData("Test1");
+        authDAOMySql.addAuthToken(authData);
+        var responseData = authDAOMySql.checkAuthToken("Not an authToken");
+        Assertions.assertNull(responseData, "Does not return null");
 
     }
 
@@ -91,5 +105,15 @@ class AuthDAOMySqlTest {
         AuthData authData3 = new AuthData("Test3");
         authDAOMySql.removeAuthToken(authData3.getAuthToken());
         Assertions.assertFalse(isInTable(authData3), "Still in table");
+    }
+    @Test
+    void badRemoveAuthToken() throws DataAccessException {
+        AuthData authData = new AuthData("Test1");
+        authDAOMySql.addAuthToken(authData);
+        AuthData authData2 = new AuthData("Test2");
+        authDAOMySql.addAuthToken(authData2);
+        AuthData authData3 = new AuthData("Test3");
+        authDAOMySql.removeAuthToken("Not an AuthToken");
+        Assertions.assertFalse(tableSize() == 3, "Deleted when it shouldn't have");
     }
 }

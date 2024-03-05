@@ -1,10 +1,10 @@
 package service;
 
-import dataAccess.AuthDAO;
+import dataAccess.DAOInterfaces.AuthDAO;
 import dataAccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
-import dataAccess.UserDAO;
+import dataAccess.DAOInterfaces.UserDAO;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class UserService {

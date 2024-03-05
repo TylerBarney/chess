@@ -1,12 +1,11 @@
-package dataAccess;
+package dataAccess.memoryDAO;
 
+import dataAccess.DAOInterfaces.AuthDAO;
 import model.AuthData;
-import model.UserData;
 
 import java.util.HashMap;
-import java.util.Map;
 
-public class AuthDAOMemory implements AuthDAO{
+public class AuthDAOMemory implements AuthDAO {
 
     private HashMap<String, String> authMap = new HashMap<>();
     @Override

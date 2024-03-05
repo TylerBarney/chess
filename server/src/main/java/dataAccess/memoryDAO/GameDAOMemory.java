@@ -1,10 +1,11 @@
-package dataAccess;
+package dataAccess.memoryDAO;
 
+import dataAccess.DAOInterfaces.GameDAO;
 import model.GameData;
 
 import java.util.HashMap;
 
-public class GameDAOMemory implements GameDAO{
+public class GameDAOMemory implements GameDAO {
     HashMap<Integer, GameData> gameList;
 
     public GameDAOMemory(){

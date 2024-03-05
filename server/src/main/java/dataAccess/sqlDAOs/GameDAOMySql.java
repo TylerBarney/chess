@@ -1,14 +1,16 @@
-package dataAccess;
+package dataAccess.sqlDAOs;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import dataAccess.DAOInterfaces.GameDAO;
+import dataAccess.DataAccessException;
 import model.GameData;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 
-public class GameDAOMySql extends MySqlDataAccess implements GameDAO{
+public class GameDAOMySql extends MySqlDataAccess implements GameDAO {
     public GameDAOMySql() throws SQLException, DataAccessException {
     }
 
@@ -48,8 +50,9 @@ public class GameDAOMySql extends MySqlDataAccess implements GameDAO{
                         whiteUsername = rs.getString("whiteUsername");
                         blackUsername = rs.getString("blackUsername");
                         game = new Gson().fromJson(rs.getString("game"), ChessGame.class);
+                        return new GameData(gameID, gameName, whiteUsername, blackUsername, game);
                     }
-                    return new GameData(gameID, gameName, whiteUsername, blackUsername, game);
+
                 }
 
             } catch (SQLException e) {
@@ -58,6 +61,7 @@ public class GameDAOMySql extends MySqlDataAccess implements GameDAO{
         } catch (SQLException | DataAccessException e) {
             throw new RuntimeException(e);
         }
+        return null;
     }
 
     @Override

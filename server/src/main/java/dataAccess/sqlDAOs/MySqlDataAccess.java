@@ -1,4 +1,6 @@
-package dataAccess;
+package dataAccess.sqlDAOs;
+
+import dataAccess.DataAccessException;
 
 import java.sql.SQLException;
 

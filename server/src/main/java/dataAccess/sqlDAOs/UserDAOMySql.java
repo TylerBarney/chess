@@ -1,5 +1,7 @@
-package dataAccess;
+package dataAccess.sqlDAOs;
 
+import dataAccess.DAOInterfaces.UserDAO;
+import dataAccess.DataAccessException;
 import model.UserData;
 
 import java.sql.SQLException;

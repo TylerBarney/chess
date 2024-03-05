@@ -1,6 +1,12 @@
 package service;
 
 import dataAccess.*;
+import dataAccess.DAOInterfaces.AuthDAO;
+import dataAccess.DAOInterfaces.GameDAO;
+import dataAccess.DAOInterfaces.UserDAO;
+import dataAccess.memoryDAO.AuthDAOMemory;
+import dataAccess.memoryDAO.GameDAOMemory;
+import dataAccess.memoryDAO.UserDAOMemory;
 import model.AuthData;
 import model.GameData;
 import model.UserData;

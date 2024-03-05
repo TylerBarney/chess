@@ -3,9 +3,8 @@ package DAOTests;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
-import dataAccess.DatabaseManager;
-import dataAccess.GameDAOMySql;
-import model.AuthData;
+import dataAccess.sqlDAOs.DatabaseManager;
+import dataAccess.sqlDAOs.GameDAOMySql;
 import model.GameData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +12,6 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.HashMap;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class GameDAOMySqlTest {
 
@@ -102,11 +99,22 @@ class GameDAOMySqlTest {
     }
 
     @Test
+    void noNameCreate(){
+        Assertions.assertThrows(Throwable.class, () -> gameDAOMySql.createGame(null), "Didn't throw error");
+    }
+
+    @Test
     void getGame() throws DataAccessException {
         int gameID = gameDAOMySql.createGame("testGame");
         GameData gameData = new GameData(gameID,"testGame", null, null, new ChessGame(true));
         GameData responseData = gameDAOMySql.getGame(gameID);
         Assertions.assertEquals(gameData, responseData, "Did not get right game");
+    }
+    @Test
+    void badGetGame() throws DataAccessException {
+        int gameID = gameDAOMySql.createGame("testGame");
+        GameData responseData = gameDAOMySql.getGame(-1);
+        Assertions.assertNull(responseData, "Did not return null");
     }
 
     @Test
@@ -120,6 +128,13 @@ class GameDAOMySqlTest {
         gameList.put(gameID3, new GameData(gameID3, "game3", null, null, new ChessGame(true)));
         var responseList = gameDAOMySql.listGames();
         Assertions.assertEquals(gameList, responseList, "Lists are not equal");
+    }
+
+    @Test
+    void noGamesListGames() throws DataAccessException {
+        HashMap<Integer, GameData> gameList = new HashMap<>();
+        var responseList = gameDAOMySql.listGames();
+        Assertions.assertEquals(gameList, responseList, "Did not match empty list");
     }
 
     @Test

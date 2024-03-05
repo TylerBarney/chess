@@ -1,18 +1,15 @@
 package DAOTests;
 
 import dataAccess.DataAccessException;
-import dataAccess.DatabaseManager;
-import dataAccess.UserDAOMySql;
+import dataAccess.sqlDAOs.DatabaseManager;
+import dataAccess.sqlDAOs.UserDAOMySql;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.sql.DriverManager;
 import java.sql.SQLException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class UserDAOMySqlTest {
 
@@ -89,11 +86,25 @@ class UserDAOMySqlTest {
     }
 
     @Test
+    void repeatedUser() throws DataAccessException {
+        UserData userData = new UserData("username", "password", "email");
+        userDAOMySql.createUser(userData);
+        Assertions.assertThrows(Throwable.class, () -> userDAOMySql.createUser(userData), "Doesn't throw error");
+    }
+
+    @Test
     void getUser() throws SQLException, DataAccessException {
         UserData userData = new UserData("username", "password", "email");
         userDAOMySql.createUser(userData);
         UserData responseData = userDAOMySql.getUser(userData.getUserName());
         Assertions.assertEquals(userData, responseData, "User datas do not match up");
+    }
+    @Test
+    void getBadUser() throws SQLException, DataAccessException {
+        UserData userData = new UserData("username", "password", "email");
+        userDAOMySql.createUser(userData);
+        UserData responseData = userDAOMySql.getUser("Not a user");
+        Assertions.assertNull(responseData, "Is not null");
     }
     @Test
     void clearUsers() throws DataAccessException {
