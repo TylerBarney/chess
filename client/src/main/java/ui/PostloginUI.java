@@ -2,23 +2,20 @@ package ui;
 
 import model.AuthData;
 
-import java.net.ProtocolException;
 import java.util.Scanner;
 
-public class PreloginUI {
+public class PostloginUI {
     ServerFacade facade;
-    public PreloginUI(ServerFacade facade) throws Exception {
+    public PostloginUI(ServerFacade facade) throws Exception {
         this.facade = facade;
-        System.out.println("Welcome to chess. Type HELP to get started.");
+        System.out.println("[LOGGED_IN] >>> Type HELP to get started.");
         while(true){
-            System.out.print("[LOGGED_OUT] >>> ");
+            System.out.print("[LOGGED_IN] >>> ");
             Scanner scanner = new Scanner(System.in);
             String line = scanner.nextLine();
             var input = line.split(" ");
             for (var string : input) {
-                if (string.equalsIgnoreCase("quit")){
-                    quit();
-                } else if (string.equalsIgnoreCase("help")){
+                if (string.equalsIgnoreCase("help")){
                     help();
                 } else if (string.equalsIgnoreCase("register")){
                     AuthData response = facade.register(input[1], input[2], input[3]);
@@ -34,22 +31,11 @@ public class PreloginUI {
     }
 
     void help() {
-        System.out.println("register <USERNAME> <PASSWORD> <EMAIL> - to create an account");
-        System.out.println("login <USERNAME> <PASSWORD> - to play chess");
-        System.out.println("quit - playing chess");
+        System.out.println("create <NAME> - a game");
+        System.out.println("list - games");
+        System.out.println("join <ID> [WHITE|BLACK|<empty>] - a game");
+        System.out.println("observe <ID> - a game");
+        System.out.println("logout - when you are done");
         System.out.println("help - with possible commands");
     }
-
-    void quit() {
-        System.exit(0);
-    }
-
-    void register(String username, String password, String email) {
-
-    }
-
-    void login(String username, String password) {
-
-    }
-
 }

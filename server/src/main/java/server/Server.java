@@ -17,6 +17,7 @@ import service.*;
 import spark.*;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class Server {
     private UserService userService;
@@ -37,9 +38,8 @@ public class Server {
         } catch (Throwable ex){
             return -1;
         }
-
         Spark.post("/user", this::registerHandler);
-        Spark.delete("/db", (req, res) -> {userService.clear(); gameService.clear(); res.status(200); return "{}";});
+        Spark.delete("/db", this::clearHandler);
         Spark.delete("/session", this::logoutHandler);
         Spark.post("/session", this::loginHandler);
         Spark.post("/game", this::createGameHandler);
@@ -52,6 +52,16 @@ public class Server {
     public void stop() {
         Spark.stop();
         Spark.awaitStop();
+    }
+
+    public Object clearHandler(Request req, Response res){
+        clear();
+        res.status(200);
+        return "{}";
+    }
+    public void clear() {
+        userService.clear();
+        gameService.clear();
     }
 
     private Object registerHandler(Request req, Response res) {
@@ -81,7 +91,10 @@ public class Server {
         }
     }
     private Object logoutHandler(Request req, Response res) {
+        System.out.println("Endpoints");
+
         try {
+            System.out.println("Got here");
             String authToken = req.headers("Authorization");
             userService.logout(authToken);
             res.status(200);
