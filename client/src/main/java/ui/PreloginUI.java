@@ -35,7 +35,9 @@ public class PreloginUI {
                 }
             }catch (Exception ex){
                 System.out.println(ex.getMessage());
-
+                String[] exMessage = ex.getMessage().split(" ");
+                int error = Integer.parseInt(exMessage[5]);
+                handleErrors(error);
             }
 
         }
