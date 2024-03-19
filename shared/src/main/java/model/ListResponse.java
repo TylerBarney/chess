@@ -1,6 +1,4 @@
-package service;
-
-import model.GameData;
+package model;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -18,6 +16,9 @@ public class ListResponse {
             i++;
         }
     }
+    public ListResponse(){
+
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -30,5 +31,16 @@ public class ListResponse {
     @Override
     public int hashCode() {
         return Arrays.hashCode(games);
+    }
+
+    @Override
+    public String toString() {
+        String out = "";
+        out += "Games: \n";
+        for (int i = 0; i <games.length; i++){
+            out += i + ": " + games[i].toString() + "\n";
+        }
+        if (games.length == 0) out += "no games created";
+        return out;
     }
 }

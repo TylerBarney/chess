@@ -1,4 +1,5 @@
 import chess.*;
+import ui.GameplayUI;
 import ui.PreloginUI;
 import ui.ServerFacade;
 

@@ -1,6 +1,4 @@
-package service;
-
-import model.GameData;
+package model;
 
 import java.util.Objects;
 
@@ -28,5 +26,13 @@ public class ListEntry {
     @Override
     public int hashCode() {
         return Objects.hash(gameID, gameName, whiteUsername, blackUsername);
+    }
+
+    @Override
+    public String toString() {
+        return "gameID=" + gameID +
+                ", gameName='" + gameName + '\'' +
+                ", whiteUsername='" + whiteUsername + '\'' +
+                ", blackUsername='" + blackUsername + '\'';
     }
 }

@@ -11,25 +11,33 @@ public class PreloginUI {
         this.facade = facade;
         System.out.println("Welcome to chess. Type HELP to get started.");
         while(true){
-            System.out.print("[LOGGED_OUT] >>> ");
-            Scanner scanner = new Scanner(System.in);
-            String line = scanner.nextLine();
-            var input = line.split(" ");
-            for (var string : input) {
-                if (string.equalsIgnoreCase("quit")){
+            try{
+                System.out.print("[LOGGED_OUT] >>> ");
+                Scanner scanner = new Scanner(System.in);
+                String line = scanner.nextLine();
+                var input = line.split(" ");
+                if (input[0].equalsIgnoreCase("quit")){
                     quit();
-                } else if (string.equalsIgnoreCase("help")){
+                } else if (input[0].equalsIgnoreCase("help")){
                     help();
-                } else if (string.equalsIgnoreCase("register")){
+                } else if (input[0].equalsIgnoreCase("register")){
+                    if (input.length < 4) {System.out.println("Not enough params"); continue;}
                     AuthData response = facade.register(input[1], input[2], input[3]);
                     System.out.println("You are logged in as: " + response.getUserName());
-                } else if (string.equalsIgnoreCase("login")){
+                    new PostloginUI(facade);
+                } else if (input[0].equalsIgnoreCase("login")){
+                    if (input.length < 3) {System.out.println("Not enough params"); continue;}
                     AuthData response = facade.login(input[1], input[2]);
                     System.out.println("You are logged in as: " + response.getUserName());
+                    new PostloginUI(facade);
                 } else {
                     System.out.println("Invalid command. Type HELP for valid commands");
                 }
+            }catch (Exception ex){
+                System.out.println(ex.getMessage());
+
             }
+
         }
     }
 
@@ -43,13 +51,15 @@ public class PreloginUI {
     void quit() {
         System.exit(0);
     }
-
-    void register(String username, String password, String email) {
-
+    void handleErrors(int errorCode){
+        if (errorCode == 401){
+            System.out.println("Error: unauthorized");
+        }  else if (errorCode == 403){
+            System.out.println("Error: already taken");
+        } else {
+            System.out.println("Error: bad request");
+        }
     }
 
-    void login(String username, String password) {
-
-    }
 
 }

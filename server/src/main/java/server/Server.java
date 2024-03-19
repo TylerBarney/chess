@@ -2,22 +2,16 @@ package server;
 
 import com.google.gson.Gson;
 import dataAccess.*;
-import dataAccess.DAOInterfaces.AuthDAO;
-import dataAccess.DAOInterfaces.GameDAO;
-import dataAccess.DAOInterfaces.UserDAO;
-import dataAccess.memoryDAO.AuthDAOMemory;
-import dataAccess.memoryDAO.GameDAOMemory;
-import dataAccess.memoryDAO.UserDAOMemory;
 import dataAccess.AuthDAOMySql;
 import dataAccess.GameDAOMySql;
 import dataAccess.UserDAOMySql;
-import model.GameData;
-import model.UserData;
+import model.*;
 import service.*;
+import service.CreateGameRequest;
+import service.LoginRequest;
 import spark.*;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 public class Server {
     private UserService userService;
@@ -91,10 +85,7 @@ public class Server {
         }
     }
     private Object logoutHandler(Request req, Response res) {
-        System.out.println("Endpoints");
-
         try {
-            System.out.println("Got here");
             String authToken = req.headers("Authorization");
             userService.logout(authToken);
             res.status(200);
