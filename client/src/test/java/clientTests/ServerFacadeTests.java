@@ -91,6 +91,7 @@ public class ServerFacadeTests {
         facade.createGame("testGame1");
         facade.createGame("testGame2");
         facade.createGame("testGame3");
+        facade.listGames();
         Assertions.assertDoesNotThrow(() -> facade.joinGame("WHITE", 2));
     }
     @Test
@@ -104,7 +105,8 @@ public class ServerFacadeTests {
         facade.createGame("testGame1");
         facade.createGame("testGame2");
         facade.createGame("testGame3");
-        Assertions.assertDoesNotThrow(() -> facade.joinGame("", 2));
+        facade.listGames();
+        Assertions.assertDoesNotThrow(() -> facade.observeGame( 2));
     }
     @Test
     void badObserveGame() {
