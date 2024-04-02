@@ -16,6 +16,7 @@ import java.util.HashMap;
 public class Server {
     private UserService userService;
     private GameService gameService;
+    private WebSocketHandler webSocketHandler;
 
     public Server() {
     }
@@ -32,6 +33,8 @@ public class Server {
         } catch (Throwable ex){
             return -1;
         }
+        webSocketHandler = new WebSocketHandler();
+        Spark.webSocket("/connect", webSocketHandler);
         Spark.post("/user", this::registerHandler);
         Spark.delete("/db", this::clearHandler);
         Spark.delete("/session", this::logoutHandler);
@@ -138,16 +141,16 @@ public class Server {
     private Object handleError(Throwable ex, Response res){
         if (ex.getMessage().equals("401")){
             res.status(401);
-            ErrorMessage errorMessage = new ErrorMessage("Error: unauthorized");
-            return new Gson().toJson(errorMessage);
+            ErrorException errorException = new ErrorException("Error: unauthorized");
+            return new Gson().toJson(errorException);
         }  else if (ex.getMessage().equals("403")){
             res.status(403);
-            ErrorMessage errorMessage = new ErrorMessage("Error: already taken");
-            return new Gson().toJson(errorMessage);
+            ErrorException errorException = new ErrorException("Error: already taken");
+            return new Gson().toJson(errorException);
         } else {
             res.status(400);
-            ErrorMessage errorMessage = new ErrorMessage("Error: bad request");
-            return new Gson().toJson(errorMessage);
+            ErrorException errorException = new ErrorException("Error: bad request");
+            return new Gson().toJson(errorException);
         }
     }
 

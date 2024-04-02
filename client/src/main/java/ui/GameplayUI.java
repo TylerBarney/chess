@@ -4,6 +4,7 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import model.webSocketMessages.NotificationMessage;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -13,10 +14,11 @@ import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
 import static ui.EscapeSequences.*;
 
-public class GameplayUI {
+public class GameplayUI implements NotificationHandler{
     final int BOARD_SIZE_IN_SQUARES = 10;
     static final int SQUARE_SIZE_IN_CHARS = 3;
     ServerFacade facade;
+
     public GameplayUI(ServerFacade facade, ChessGame game, String teamColor) {
         this.facade = facade;
         printBoard("white", new ChessGame(true).getBoard());
@@ -160,5 +162,10 @@ public class GameplayUI {
     void setReset(PrintStream out){
         out.print(RESET_BG_COLOR);
         out.print(RESET_TEXT_COLOR);
+    }
+
+    @Override
+    public void notify(NotificationMessage notificationMessage) {
+        System.out.println(notificationMessage.message);
     }
 }

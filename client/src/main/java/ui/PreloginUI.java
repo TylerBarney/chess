@@ -1,14 +1,14 @@
 package ui;
 
 import model.AuthData;
+import model.webSocketMessages.NotificationMessage;
 
 import java.net.ProtocolException;
 import java.util.Scanner;
 
-public class PreloginUI {
-    ServerFacade facade;
-    public PreloginUI(ServerFacade facade) throws Exception {
-        this.facade = facade;
+public class PreloginUI implements NotificationHandler{
+    ServerFacade facade = new ServerFacade(8080, this);
+    public PreloginUI() throws Exception {
         System.out.println("Welcome to chess. Type HELP to get started.");
         while(true){
             try{
@@ -64,4 +64,8 @@ public class PreloginUI {
     }
 
 
+    @Override
+    public void notify(NotificationMessage notificationMessage) {
+        System.out.println(notificationMessage.message);
+    }
 }

@@ -14,14 +14,22 @@ public class ServerFacade {
     String authToken;
     public ListResponse gameList;
     int port;
+    WebSocketFacade ws;
+    NotificationHandler notificationHandler;
     public ServerFacade(int port) throws Exception {
         this.port = port;
         try {gameList = listGames();} catch (Exception ignored) {}
+    }
+    public ServerFacade(int port, NotificationHandler notificationHandler) throws Exception {
+        this.port = port;
+        try {gameList = listGames();} catch (Exception ignored) {}
+        this.notificationHandler = notificationHandler;
     }
 
     public AuthData register(String username, String password, String email) throws Exception {
         URI uri = new URI(String.format("http://localhost:%d/user", port));
         http = (HttpURLConnection) uri.toURL().openConnection();
+
         http.setRequestMethod("GET");
 
         http.setDoOutput(true);
@@ -137,6 +145,8 @@ public class ServerFacade {
     public ChessGame joinGame(String playerColor, int gameID) throws Exception {
         URI uri = new URI(String.format("http://localhost:%d/game", port));
         http = (HttpURLConnection) uri.toURL().openConnection();
+        ws = new WebSocketFacade(String.format("http://localhost:%d", port), notificationHandler);
+        ws.joinPlayer(authToken, gameID, ChessGame.TeamColor.valueOf(playerColor.toUpperCase()));
         http.setRequestMethod("PUT");
 
         http.setDoOutput(true);

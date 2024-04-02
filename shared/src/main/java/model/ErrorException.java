@@ -1,6 +1,6 @@
 package model;
 
-public record ErrorMessage(
+public record ErrorException(
         String message
 ) {
 

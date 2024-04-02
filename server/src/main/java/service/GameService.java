@@ -45,10 +45,10 @@ public class GameService  {
 
         if (playerColor == null) {
 
-        } else if (playerColor.equals("WHITE")){
+        } else if (playerColor.toUpperCase().equals("WHITE")){
             if (gameData.getWhiteUsername() != null) throw new DataAccessException("403");
             gameData.setWhiteUsername(username);
-        } else if (playerColor.equals("BLACK")){
+        } else if (playerColor.toUpperCase().equals("BLACK")){
             if (gameData.getBlackUsername() != null) throw new DataAccessException("403");
             gameData.setBlackUsername(username);
         }else {

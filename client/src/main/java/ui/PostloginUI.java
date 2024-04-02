@@ -1,13 +1,11 @@
 package ui;
 
 import chess.ChessGame;
-import com.google.gson.Gson;
-import model.AuthData;
-import model.ErrorMessage;
+import model.webSocketMessages.NotificationMessage;
 
 import java.util.Scanner;
 
-public class PostloginUI {
+public class PostloginUI implements NotificationHandler {
     ServerFacade facade;
     boolean calledList = false;
     public PostloginUI(ServerFacade facade) throws Exception {
@@ -81,5 +79,10 @@ public class PostloginUI {
         } else {
             System.out.println("Error: bad request");
         }
+    }
+
+    @Override
+    public void notify(NotificationMessage notificationMessage) {
+        System.out.println(notificationMessage.message);
     }
 }
