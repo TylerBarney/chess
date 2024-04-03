@@ -9,8 +9,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class UserService {
 
-    UserDAO userDAO;
-    AuthDAO authDAO;
+    public UserDAO userDAO;
+    public AuthDAO authDAO;
     public UserService(UserDAO userDAO, AuthDAO authDAO){
         this.userDAO = userDAO;
         this.authDAO = authDAO;

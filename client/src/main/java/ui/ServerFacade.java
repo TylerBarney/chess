@@ -146,6 +146,8 @@ public class ServerFacade {
         URI uri = new URI(String.format("http://localhost:%d/game", port));
         http = (HttpURLConnection) uri.toURL().openConnection();
         ws = new WebSocketFacade(String.format("http://localhost:%d", port), notificationHandler);
+
+        //need to fix this so that observe game can be run
         ws.joinPlayer(authToken, gameID, ChessGame.TeamColor.valueOf(playerColor.toUpperCase()));
         http.setRequestMethod("PUT");
 

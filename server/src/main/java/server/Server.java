@@ -33,7 +33,7 @@ public class Server {
         } catch (Throwable ex){
             return -1;
         }
-        webSocketHandler = new WebSocketHandler();
+        webSocketHandler = new WebSocketHandler(userService, gameService);
         Spark.webSocket("/connect", webSocketHandler);
         Spark.post("/user", this::registerHandler);
         Spark.delete("/db", this::clearHandler);

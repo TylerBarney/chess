@@ -10,8 +10,8 @@ import model.GameData;
 import java.util.HashMap;
 
 public class GameService  {
-    GameDAO gameDAO;
-    AuthDAO authDAO;
+    public GameDAO gameDAO;
+    public AuthDAO authDAO;
 
     public GameService(GameDAO gameDAO, AuthDAO authDAO){
         this.gameDAO = gameDAO;

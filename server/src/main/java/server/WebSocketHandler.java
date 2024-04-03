@@ -10,6 +10,8 @@ import model.webSocketMessages.UserGameCommand;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import service.GameService;
+import service.UserService;
 
 import javax.management.Notification;
 import java.io.IOException;
@@ -17,6 +19,12 @@ import java.io.IOException;
 @WebSocket
 public class WebSocketHandler {
     private ConnectionManager connections = new ConnectionManager();
+    private UserService userService;
+    private GameService gameService;
+    public WebSocketHandler(UserService userService, GameService gameService){
+        this.userService = userService;
+        this.gameService = gameService;
+    }
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
@@ -43,11 +51,11 @@ public class WebSocketHandler {
     }
 
     private void joinCommand(String authToken, int gameID, ChessGame.TeamColor playerColor, Session session) throws IOException {
-        System.out.println("Running command on server");
         connections.add(gameID, authToken, playerColor, session);
-        var message = String.format("player joined as %s", playerColor.name());
+        String userName = userService.authDAO.checkAuthToken(authToken).getUserName();
+        var message = String.format("%s joined as %s", userName, playerColor.name());
         var notfication = new NotificationMessage(message);
         connections.broadcast(gameID, authToken, notfication);
-        System.out.println(message);
+        ChessGame game = gameService.gameDAO.getGame(gameID).getGame();
     }
 }

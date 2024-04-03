@@ -21,8 +21,12 @@ public class GameplayUI implements NotificationHandler{
 
     public GameplayUI(ServerFacade facade, ChessGame game, String teamColor) {
         this.facade = facade;
-        printBoard("white", new ChessGame(true).getBoard());
-        printBoard("black", new ChessGame(true).getBoard());
+        if (teamColor.equalsIgnoreCase("white"))
+            printBoard("white", new ChessGame(true).getBoard());
+        else if (teamColor.equalsIgnoreCase("black"))
+            printBoard("black", new ChessGame(true).getBoard());
+        else
+            printBoard("white", new ChessGame(true).getBoard());
     }
     void printBoard(String playerColor, ChessBoard board){
 
