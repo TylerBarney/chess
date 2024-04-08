@@ -1,6 +1,7 @@
 package server;
 
 import chess.ChessGame;
+import model.webSocketMessages.ErrorMessage;
 import model.webSocketMessages.ServerMessage;
 import org.eclipse.jetty.websocket.api.Session;
 
@@ -63,5 +64,10 @@ public class ConnectionManager {
                 connection.send(notification.toString());
             }
         }
+    }
+
+    public void broadCastError(String authToken, ErrorMessage errorMessage, Session session) throws IOException {
+        var connection = new Connection(authToken, null, session);
+        connection.send(errorMessage.toString());
     }
 }

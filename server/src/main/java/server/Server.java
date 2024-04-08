@@ -6,6 +6,7 @@ import dataAccess.AuthDAOMySql;
 import dataAccess.GameDAOMySql;
 import dataAccess.UserDAOMySql;
 import model.*;
+import model.webSocketMessages.ErrorMessage;
 import service.*;
 import service.CreateGameRequest;
 import service.LoginRequest;

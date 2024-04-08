@@ -29,36 +29,6 @@ public class WebSocketFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-//                    GsonBuilder gsonBuilder = new GsonBuilder();
-//                    gsonBuilder.registerTypeAdapter(ServerMessage.class, (JsonDeserializer<ServerMessage>) (el, type, ctx) -> {
-//                        ServerMessage serverMessage = null;
-//                        if (el.isJsonObject()){
-//                            String serverMessageType = el.getAsJsonObject().get("serverMessageType").getAsString();
-//                            switch (ServerMessage.ServerMessageType.valueOf(serverMessageType)){
-//                                case NOTIFICATION -> serverMessage = ctx.deserialize(el, NotificationMessage.class);
-//                                case LOAD_GAME -> serverMessage = ctx.deserialize(el, LoadGameMessage.class);
-//                                case ERROR -> serverMessage = ctx.deserialize(el, ErrorMessage.class);
-//                            }
-//                        }
-//                        return serverMessage;
-//                    });
-//                    Gson gson = gsonBuilder.create();
-//                    var serverMessage = gson.fromJson(message, ServerMessage.class);
-//                    switch(serverMessage.getServerMessageType()){
-//                        case NOTIFICATION -> {
-//                            var notificationMessage = (NotificationMessage) serverMessage;
-//                            notificationHandler.notify(notificationMessage);
-//                        }
-//                        case LOAD_GAME -> {
-//                            var loadGameMessage = (LoadGameMessage) serverMessage;
-//                            notificationHandler.notify(loadGameMessage);
-//                        }
-//                        case ERROR -> {
-//                            var errorMessage = (ErrorMessage) serverMessage;
-//                            notificationHandler.notify(serverMessage);
-//                        }
-//                    }
-                    //need to edit this to handle other messages like load game
                     var serverMessage = new Gson().fromJson(message, ServerMessage.class);
                     NotificationMessage notification;
                     LoadGameMessage loadGameMessage;
@@ -87,6 +57,14 @@ public class WebSocketFacade extends Endpoint {
     public void joinPlayer(String authToken, int gameID, ChessGame.TeamColor playerColor) throws IOException {
         try {
             var command = new JoinPlayerCommand(authToken, gameID, playerColor);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (Exception ex){
+            throw ex;
+        }
+    }
+    public void joinObserver(String authToken, int gameID) throws IOException {
+        try {
+            var command = new JoinObserverCommand(authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (Exception ex){
             throw ex;

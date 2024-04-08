@@ -1,13 +1,13 @@
 package server;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
-import model.webSocketMessages.JoinPlayerCommand;
-import model.webSocketMessages.LoadGameMessage;
-import model.webSocketMessages.NotificationMessage;
-import model.webSocketMessages.UserGameCommand;
+import dataAccess.DataAccessException;
+import model.webSocketMessages.*;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -29,7 +29,6 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
-        System.out.println("Server recieved Message");
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(UserGameCommand.class, (JsonDeserializer<UserGameCommand>) (el, type, ctx) -> {
             UserGameCommand command = null;
@@ -37,6 +36,8 @@ public class WebSocketHandler {
                 String commandType = el.getAsJsonObject().get("commandType").getAsString();
                 switch (UserGameCommand.CommandType.valueOf(commandType)){
                     case JOIN_PLAYER -> command = ctx.deserialize(el, JoinPlayerCommand.class);
+                    case JOIN_OBSERVER -> command = ctx.deserialize(el, JoinObserverCommand.class);
+                    case MAKE_MOVE -> command = ctx.deserialize(el, MakeMoveCommand.class);
                 }
             }
             return command;
@@ -48,18 +49,62 @@ public class WebSocketHandler {
                 var joinCommand = (JoinPlayerCommand) command;
                 joinCommand(joinCommand.getAuthString(), joinCommand.gameID, joinCommand.playerColor, session);
             }
+            case JOIN_OBSERVER -> {
+                var joinCommand = (JoinObserverCommand) command;
+                joinCommand(joinCommand.getAuthString(), joinCommand.gameID, null, session);
+            }
+            case MAKE_MOVE -> {
+                var moveCommand = (MakeMoveCommand) command;
+                moveCommand(moveCommand.getAuthString(), moveCommand.gameID, moveCommand.move, session);
+            }
         }
     }
 
     private void joinCommand(String authToken, int gameID, ChessGame.TeamColor playerColor, Session session) throws IOException {
-        connections.add(gameID, authToken, playerColor, session);
-        String userName = userService.authDAO.checkAuthToken(authToken).getUserName();
-        var message = String.format("%s joined as %s", userName, playerColor.name());
-        var notfication = new NotificationMessage(message);
-        connections.broadcast(gameID, authToken, notfication);
-        ChessGame game = gameService.gameDAO.getGame(gameID).getGame();
-        connections.broadCastTo(gameID, authToken, new LoadGameMessage(game));
+        try{
+            String teamColor = (playerColor!= null) ? String.valueOf(playerColor) : null;
+            gameService.isValidJoin(teamColor, gameID, authToken);
+            connections.add(gameID, authToken, playerColor, session);
+            String userName = userService.authDAO.checkAuthToken(authToken).getUserName();
+            var message = (playerColor != null) ? String.format("%s joined as %s", userName, playerColor.name()) : String.format("%s joined as observer", userName);
+            var notfication = new NotificationMessage(message);
+            connections.broadcast(gameID, authToken, notfication);
+            ChessGame game = gameService.gameDAO.getGame(gameID).getGame();
+            connections.broadCastTo(gameID, authToken, new LoadGameMessage(game));
+        } catch (DataAccessException ex){
+            sendErrorMessage(authToken, handleErrors(ex), session);
+        }
     }
 
+    private void moveCommand(String authToken, int gameID, ChessMove move, Session session) throws IOException {
+        try {
+            ChessGame game = gameService.gameDAO.getGame(gameID).getGame();
+            game.makeMove(move);
+            String userName = userService.authDAO.checkAuthToken(authToken).getUserName();
+            connections.broadcast(gameID, "0", new LoadGameMessage(game));
+            connections.broadcast(gameID, authToken, new NotificationMessage(String.format("%s made %s move", userName, move.toString())));
+        } catch (InvalidMoveException ex){
+            sendErrorMessage(authToken, handleErrors(ex), session);
+        }
+    }
+
+    public void sendErrorMessage(String authToken, ErrorMessage errorMessage, Session session) throws IOException {
+        connections.broadCastError(authToken, errorMessage, session);
+    }
+
+    public ErrorMessage handleErrors(DataAccessException ex){
+        if (ex.getMessage().equals("401")){
+            return new ErrorMessage("Error: unauthorized");
+        } else if (ex.getMessage().equals("403")){
+            return new ErrorMessage("Error: already taken");
+        } else if (ex.getMessage().equals("400")){
+            return new ErrorMessage("Error: bad request");
+        } else {
+            return new ErrorMessage("Error: " + ex.getMessage());
+        }
+    }
+    public ErrorMessage handleErrors(InvalidMoveException ex){
+        return new ErrorMessage("Error: " + ex.getMessage());
+    }
 
 }

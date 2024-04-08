@@ -15,7 +15,7 @@ import static java.lang.Math.abs;
  */
 public class ChessGame {
 
-    private TeamColor teamTurn;
+    private TeamColor teamTurn = TeamColor.WHITE;
     private ChessBoard board;
     public ChessGame() {
 
