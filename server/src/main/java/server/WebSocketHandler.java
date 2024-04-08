@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 import model.webSocketMessages.JoinPlayerCommand;
+import model.webSocketMessages.LoadGameMessage;
 import model.webSocketMessages.NotificationMessage;
 import model.webSocketMessages.UserGameCommand;
 import org.eclipse.jetty.websocket.api.Session;
@@ -57,5 +58,8 @@ public class WebSocketHandler {
         var notfication = new NotificationMessage(message);
         connections.broadcast(gameID, authToken, notfication);
         ChessGame game = gameService.gameDAO.getGame(gameID).getGame();
+        connections.broadCastTo(gameID, authToken, new LoadGameMessage(game));
     }
+
+
 }

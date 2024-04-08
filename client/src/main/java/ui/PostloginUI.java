@@ -5,7 +5,7 @@ import model.webSocketMessages.NotificationMessage;
 
 import java.util.Scanner;
 
-public class PostloginUI implements NotificationHandler {
+public class PostloginUI extends NotificationHandler {
     ServerFacade facade;
     boolean calledList = false;
     public PostloginUI(ServerFacade facade) throws Exception {
@@ -36,9 +36,10 @@ public class PostloginUI implements NotificationHandler {
                     if (Integer.parseInt(input[1]) < 0 || Integer.parseInt(input[1]) >= facade.gameList.games.length){
                         System.out.println("Game ID invalid");
                     } else {
-                        ChessGame game = facade.joinGame(input[2], Integer.parseInt(input[1]));
-                        System.out.println("You have joined gameID: " + input[1] + " as " + input[2] + "player");
-                        new GameplayUI(facade, game, input[1]);
+                        System.out.println("You are joining gameID: " + input[1] + " as " + input[2] + " player");
+                        new GameplayUI(facade, input);
+                        //ChessGame game = facade.joinGame(input[2], Integer.parseInt(input[1]));
+
                     }
                 } else if (input[0].equalsIgnoreCase("observe")){
                     if (!calledList) {System.out.println("Call list first"); continue;}
@@ -46,9 +47,10 @@ public class PostloginUI implements NotificationHandler {
                     if (Integer.parseInt(input[1]) < 0 || Integer.parseInt(input[1]) >= facade.gameList.games.length){
                         System.out.println("Game ID invalid");
                     } else {
-                        ChessGame game = facade.observeGame(Integer.parseInt(input[1]));
                         System.out.println("You are observing gameID: " + input[1]);
-                        new GameplayUI(facade, game, "white");
+                        new GameplayUI(facade, new String[]{input[0], input[1], "white"});
+                        //ChessGame game = facade.observeGame(Integer.parseInt(input[1]));
+
                     }
 
                 } else {
@@ -79,10 +81,5 @@ public class PostloginUI implements NotificationHandler {
         } else {
             System.out.println("Error: bad request");
         }
-    }
-
-    @Override
-    public void notify(NotificationMessage notificationMessage) {
-        System.out.println(notificationMessage.message);
     }
 }

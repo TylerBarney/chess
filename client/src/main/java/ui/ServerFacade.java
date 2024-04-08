@@ -26,6 +26,10 @@ public class ServerFacade {
         this.notificationHandler = notificationHandler;
     }
 
+    public void setNotificationHandler(NotificationHandler notificationHandler) {
+        this.notificationHandler = notificationHandler;
+    }
+
     public AuthData register(String username, String password, String email) throws Exception {
         URI uri = new URI(String.format("http://localhost:%d/user", port));
         http = (HttpURLConnection) uri.toURL().openConnection();

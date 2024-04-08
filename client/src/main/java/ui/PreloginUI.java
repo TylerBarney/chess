@@ -6,38 +6,49 @@ import model.webSocketMessages.NotificationMessage;
 import java.net.ProtocolException;
 import java.util.Scanner;
 
-public class PreloginUI implements NotificationHandler{
+public class PreloginUI extends NotificationHandler {
     ServerFacade facade = new ServerFacade(8080, this);
+
     public PreloginUI() throws Exception {
         System.out.println("Welcome to chess. Type HELP to get started.");
-        while(true){
-            try{
+        while (true) {
+            try {
                 System.out.print("[LOGGED_OUT] >>> ");
                 Scanner scanner = new Scanner(System.in);
                 String line = scanner.nextLine();
+
                 var input = line.split(" ");
-                if (input[0].equalsIgnoreCase("quit")){
+                if (input[0].equalsIgnoreCase("quit")) {
                     quit();
-                } else if (input[0].equalsIgnoreCase("help")){
+                } else if (input[0].equalsIgnoreCase("help")) {
                     help();
-                } else if (input[0].equalsIgnoreCase("register")){
-                    if (input.length < 4) {System.out.println("Not enough params"); continue;}
+                } else if (input[0].equalsIgnoreCase("register")) {
+                    if (input.length < 4) {
+                        System.out.println("Not enough params");
+                        continue;
+                    }
                     AuthData response = facade.register(input[1], input[2], input[3]);
                     System.out.println("You are logged in as: " + response.getUserName());
                     new PostloginUI(facade);
-                } else if (input[0].equalsIgnoreCase("login")){
-                    if (input.length < 3) {System.out.println("Not enough params"); continue;}
+                } else if (input[0].equalsIgnoreCase("login")) {
+                    if (input.length < 3) {
+                        System.out.println("Not enough params");
+                        continue;
+                    }
                     AuthData response = facade.login(input[1], input[2]);
                     System.out.println("You are logged in as: " + response.getUserName());
                     new PostloginUI(facade);
                 } else {
                     System.out.println("Invalid command. Type HELP for valid commands");
                 }
-            }catch (Exception ex){
-                System.out.println(ex.getMessage());
+            } catch (Exception ex) {
                 String[] exMessage = ex.getMessage().split(" ");
-                int error = Integer.parseInt(exMessage[5]);
-                handleErrors(error);
+                try {
+                    int error = Integer.parseInt(exMessage[5]);
+                    handleErrors(error);
+                } catch (Exception ex2) {
+                    System.out.println("Error: " + ex.getMessage());
+                }
             }
 
         }
@@ -53,19 +64,14 @@ public class PreloginUI implements NotificationHandler{
     void quit() {
         System.exit(0);
     }
-    void handleErrors(int errorCode){
-        if (errorCode == 401){
+
+    void handleErrors(int errorCode) {
+        if (errorCode == 401) {
             System.out.println("Error: unauthorized");
-        }  else if (errorCode == 403){
+        } else if (errorCode == 403) {
             System.out.println("Error: already taken");
-        } else {
+        } else if (errorCode == 400){
             System.out.println("Error: bad request");
         }
-    }
-
-
-    @Override
-    public void notify(NotificationMessage notificationMessage) {
-        System.out.println(notificationMessage.message);
     }
 }
