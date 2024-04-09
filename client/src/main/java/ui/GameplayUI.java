@@ -59,6 +59,9 @@ public class GameplayUI extends NotificationHandler{
                     } else if (input1[0].equalsIgnoreCase("Resign")){
                         inGame = false;
                         facade.resign(gameID);
+                    } else if (input1[0].equalsIgnoreCase("Leave")){
+                        inGame = false;
+                        facade.leave(gameID);
                     }
                 } catch (Exception ex){
                     System.out.println("Error");

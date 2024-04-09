@@ -185,6 +185,9 @@ public class ServerFacade {
     public void resign(int gameID) throws IOException {
         ws.resign(authToken, gameID);
     }
+    public void leave(int gameID) throws IOException {
+        ws.leave(authToken, gameID);
+    }
 
     public int getGameID(int listNumber){
         if (listNumber > -1 && listNumber < gameList.games.length){
