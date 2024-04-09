@@ -76,9 +76,12 @@ public class WebSocketHandler {
             String teamColor = (playerColor!= null) ? String.valueOf(playerColor) : null;
             gameService.isValidJoin(teamColor, gameID, authToken);
             String userName = userService.authDAO.checkAuthToken(authToken).getUserName();
-            if (playerColor != null & !userName.equals(gameService.gameDAO.getGame(gameID).getBlackUsername()) && !userName.equals(gameService.gameDAO.getGame(gameID).getWhiteUsername())) throw new DataAccessException("400");
+            String blackUser = gameService.gameDAO.getGame(gameID).getBlackUsername();
+            String whiteUser = gameService.gameDAO.getGame(gameID).getWhiteUsername();
+            if (playerColor != null && !userName.equals(blackUser) && !userName.equals(whiteUser)) {
+                throw new DataAccessException("400");
+            }
             connections.add(gameID, authToken, playerColor, session);
-
             var message = (playerColor != null) ? String.format("%s joined as %s", userName, playerColor.name()) : String.format("%s joined as observer", userName);
             var notfication = new NotificationMessage(message);
             connections.broadcast(gameID, authToken, notfication);

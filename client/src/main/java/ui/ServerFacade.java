@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import model.*;
 
@@ -149,9 +150,6 @@ public class ServerFacade {
     public ChessGame joinGame(String playerColor, int gameID) throws Exception {
         URI uri = new URI(String.format("http://localhost:%d/game", port));
         http = (HttpURLConnection) uri.toURL().openConnection();
-        ws = new WebSocketFacade(String.format("http://localhost:%d", port), notificationHandler);
-
-        ws.joinPlayer(authToken, gameID, (playerColor == null) ? null : ChessGame.TeamColor.valueOf(playerColor.toUpperCase()));
         http.setRequestMethod("PUT");
 
         http.setDoOutput(true);
@@ -168,6 +166,9 @@ public class ServerFacade {
         } catch (Exception ex){
             throw ex;
         }
+        ws = new WebSocketFacade(String.format("http://localhost:%d", port), notificationHandler);
+
+        ws.joinPlayer(authToken, gameID, (playerColor == null) ? null : ChessGame.TeamColor.valueOf(playerColor.toUpperCase()));
 
         try (InputStream respBody = http.getInputStream()){
             InputStreamReader inputStreamReader = new InputStreamReader(respBody);
@@ -176,6 +177,7 @@ public class ServerFacade {
         } catch (Exception ex) {
             throw ex;
         }
+
     }
 
     public ChessGame observeGame(int gameID) throws Exception {
@@ -187,6 +189,10 @@ public class ServerFacade {
     }
     public void leave(int gameID) throws IOException {
         ws.leave(authToken, gameID);
+    }
+
+    public void makeMove(int gameID, ChessMove move) throws IOException{
+        ws.makeMove(authToken, gameID, move);
     }
 
     public int getGameID(int listNumber){

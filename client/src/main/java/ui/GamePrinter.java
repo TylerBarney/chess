@@ -6,24 +6,25 @@ import chess.ChessPosition;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Vector;
 
 import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
 import static ui.EscapeSequences.*;
 
 public class GamePrinter {
-    final int BOARD_SIZE_IN_SQUARES = 10;
+    static final int BOARD_SIZE_IN_SQUARES = 10;
     static final int SQUARE_SIZE_IN_CHARS = 3;
 
-    void printBoard(String playerColor, ChessBoard board){
+    void printBoard(String playerColor, ChessBoard board, Vector<ChessPosition> highlights){
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         out.print(ERASE_SCREEN);
-        if (playerColor.equalsIgnoreCase("White")) printWhiteBoard(board, out);
-        else printBlackBoard(board, out);
+        if (playerColor.equalsIgnoreCase("White")) printWhiteBoard(board, out, highlights);
+        else printBlackBoard(board, out, highlights);
         out.print(RESET_BG_COLOR);
         out.print(SET_TEXT_COLOR_WHITE);
     }
-    void printChessBoard(PrintStream out, ChessBoard board, int startingRow, int endRow, int startingCol, int endCol){
+    void printChessBoard(PrintStream out, ChessBoard board, int startingRow, int endRow, int startingCol, int endCol, Vector<ChessPosition> highlights){
         int i;
         int j;
         if (startingRow == 1) i = 1;
@@ -75,6 +76,12 @@ public class GamePrinter {
                         if (piece.getPieceType() == ChessPiece.PieceType.ROOK) text = BLACK_ROOK;
                         if (piece.getPieceType() == ChessPiece.PieceType.PAWN) text = BLACK_PAWN;
                     }
+                    if (highlights != null){
+                        ChessPosition position = new ChessPosition(boardRow, boardCol);
+                        if (highlights.contains(position)){
+                            bgCOLOR = SET_BG_COLOR_YELLOW;
+                        }
+                    }
                     if (q == 1) printSquare(out, text, bgCOLOR, txtColor);
                     else printSquare(out, null, bgCOLOR, SET_TEXT_COLOR_BLUE);
                 }
@@ -86,16 +93,16 @@ public class GamePrinter {
         }
     }
 
-    void printBlackBoard(ChessBoard board, PrintStream out){
+    void printBlackBoard(ChessBoard board, PrintStream out, Vector<ChessPosition> highlights){
         String[] headers = {null, " h ", " g ", " f ", " e ", " d ", " c ", " b ", " a ", null};
         printHeaders(headers, out);
-        printChessBoard(out, board, 1, 8, 8, 1);
+        printChessBoard(out, board, 1, 8, 8, 1, highlights);
         printHeaders(headers, out);
     }
-    void printWhiteBoard(ChessBoard board, PrintStream out){
+    void printWhiteBoard(ChessBoard board, PrintStream out, Vector<ChessPosition> highlights){
         String[] headers = {null, " a ", " b ", " c ", " d ", " e ", " f ", " g ", " h ", null};
         printHeaders(headers, out);
-        printChessBoard(out, board, 8, 1, 1, 8);
+        printChessBoard(out, board, 8, 1, 1, 8, highlights);
         printHeaders(headers, out);
     }
 
@@ -119,14 +126,6 @@ public class GamePrinter {
         }
         setReset(out);
         out.println();
-    }
-    void printHeader(PrintStream out, String headerText){
-        setGrey(out);
-        int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
-        int suffixLength = SQUARE_SIZE_IN_CHARS - prefixLength;
-        out.print(EMPTY.repeat(prefixLength));
-        printHeaderText(out, headerText);
-        out.print(EMPTY.repeat(suffixLength));
     }
 
     void printHeaderText(PrintStream out, String text){

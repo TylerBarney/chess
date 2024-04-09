@@ -34,16 +34,17 @@ public class ConnectionManager {
 
     }
 
-    public void remove(String clientAuth){
+    public void remove(int gameID, Connection connection){
 
-        for (Map.Entry<Integer, Vector<Connection>> entry : connections.entrySet()){
-            Vector<Connection> entryConnections = entry.getValue();
-            for (var connection : entryConnections){
-                if (connection.authToken.equals(clientAuth)){
-                    entry.getValue().remove(connection);
-                }
-            }
-        }
+        connections.get(gameID).remove(connection);
+//        for (Map.Entry<Integer, Vector<Connection>> entry : connections.entrySet()){
+//            Vector<Connection> entryConnections = entry.getValue();
+//            for (var connection : entryConnections){
+//                if (connection.authToken.equals(clientAuth)){
+//                    entry.getValue().remove(connection);
+//                }
+//            }
+//        }
     }
 
     public void broadcast(int gameID, String excludeClient, ServerMessage notification) throws IOException {
@@ -62,7 +63,7 @@ public class ConnectionManager {
             }
         }
         for (var c : removeList){
-            remove(c.authToken);
+            remove(gameID, c);
         }
     }
 

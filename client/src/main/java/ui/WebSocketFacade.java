@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
@@ -23,8 +24,10 @@ public class WebSocketFacade extends Endpoint {
             URI socketURI = new URI(url + "/connect");
             this.notificationHandler = notificationHandler;
 
+
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
+            session.setMaxIdleTimeout(5 * 60 * 1000);
 
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
@@ -90,6 +93,15 @@ public class WebSocketFacade extends Endpoint {
     public void leave(String authToken, int gameID) throws IOException {
         try {
             var command = new LeaveCommand(authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (Exception ex){
+            throw ex;
+        }
+    }
+
+    public void makeMove(String authToken, int gameID, ChessMove move) throws IOException {
+        try {
+            var command = new MakeMoveCommand(authToken, gameID, move);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (Exception ex){
             throw ex;
