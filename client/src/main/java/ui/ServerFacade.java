@@ -14,7 +14,7 @@ public class ServerFacade {
     HttpURLConnection http;
     String authToken;
     public ListResponse gameList;
-    int port;
+    public int port;
     WebSocketFacade ws;
     NotificationHandler notificationHandler;
     public ServerFacade(int port) throws Exception {
@@ -166,9 +166,6 @@ public class ServerFacade {
         } catch (Exception ex){
             throw ex;
         }
-        ws = new WebSocketFacade(String.format("http://localhost:%d", port), notificationHandler);
-
-        ws.joinPlayer(authToken, gameID, (playerColor == null) ? null : ChessGame.TeamColor.valueOf(playerColor.toUpperCase()));
 
         try (InputStream respBody = http.getInputStream()){
             InputStreamReader inputStreamReader = new InputStreamReader(respBody);

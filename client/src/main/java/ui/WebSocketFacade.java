@@ -27,7 +27,6 @@ public class WebSocketFacade extends Endpoint {
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
-            session.setMaxIdleTimeout(5 * 60 * 1000);
 
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
@@ -106,5 +105,9 @@ public class WebSocketFacade extends Endpoint {
         } catch (Exception ex){
             throw ex;
         }
+    }
+
+    public void setNotificationHandler(NotificationHandler notificationHandler){
+        this.notificationHandler = notificationHandler;
     }
 }

@@ -1,40 +1,42 @@
 package ui;
 
 import chess.*;
+import model.AuthData;
 import model.webSocketMessages.ErrorMessage;
 import model.webSocketMessages.LoadGameMessage;
 import model.webSocketMessages.NotificationMessage;
 import model.webSocketMessages.ServerMessage;
 
 import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Vector;
 
-import static chess.ChessGame.TeamColor.BLACK;
-import static chess.ChessGame.TeamColor.WHITE;
-import static ui.EscapeSequences.*;
-
 public class GameplayUI extends NotificationHandler{
-    ServerFacade facade;
+    ServerFacade serverFacade;
+    WebSocketFacade webSocketFacade;
     GamePrinter gamePrinter = new GamePrinter();
     String teamColor;
     int gameID;
     ChessGame game;
+    AuthData authData;
 
-    public GameplayUI(ServerFacade facade, String[] input) throws Exception {
-        this.facade = facade;
+    public GameplayUI(AuthData authData, ChessGame game, WebSocketFacade webSocketFacade, ServerFacade serverFacade, String[] input) throws Exception {
+        this.serverFacade = serverFacade;
+        this.webSocketFacade = new WebSocketFacade(String.format("http://localhost:%d", serverFacade.port), this);
         this.teamColor = (input[2] == null) ? "white" : input[2];
-        facade.setNotificationHandler(this);
-        if (input[2] == null){
-            facade.observeGame(facade.getGameID(Integer.parseInt(input[1])));
-        } else {
-            game = facade.joinGame(input[2], facade.getGameID(Integer.parseInt(input[1])));
-        }
-        this.gameID = facade.getGameID(Integer.parseInt(input[1]));
+        serverFacade.setNotificationHandler(this);
+        this.authData = authData;
+        this.game = game;
+        this.gameID = serverFacade.getGameID(Integer.parseInt(input[1]));
         boolean inGame = true;
+        if (input[2] != null){
+            ChessGame.TeamColor playerColor = ChessGame.TeamColor.valueOf(input[2].toUpperCase());
+            this.webSocketFacade.joinPlayer(authData.getAuthToken(), gameID, playerColor);
+        } else {
+            this.webSocketFacade.joinObserver(authData.getAuthToken(), gameID);
+        }
+
         synchronized (System.out) {
             while(inGame){
                 try{
@@ -52,10 +54,10 @@ public class GameplayUI extends NotificationHandler{
                         gamePrinter.printBoard(teamColor, game.getBoard(), null);
                     } else if (input1[0].equalsIgnoreCase("Resign")){
                         inGame = false;
-                        facade.resign(gameID);
+                        this.webSocketFacade.resign(authData.getAuthToken(), gameID);
                     } else if (input1[0].equalsIgnoreCase("Leave")){
                         inGame = false;
-                        facade.leave(gameID);
+                        this.webSocketFacade.leave(authData.getAuthToken(), gameID);
                     } else if (input1[0].equalsIgnoreCase("move") && input1.length >= 5){
                         proccessMove(input1);
                     } else if (input1[0].equalsIgnoreCase("Highlight") && input1.length >= 3){
@@ -71,10 +73,10 @@ public class GameplayUI extends NotificationHandler{
     private void processPosition(String[] input){
         int col = charToNum(input[1].charAt(0));
         int row = Integer.parseInt(input[2]);
-        if (col < 1 || col > 8 || row < 1 || row > 8){
+        ChessPosition position = new ChessPosition(row, col);
+        if (col < 1 || col > 8 || row < 1 || row > 8 || game.getBoard().getPiece(position) == null){
             System.out.println("Error: invalid poisition");
         } else {
-            ChessPosition position = new ChessPosition(row, col);
             HashSet<ChessMove> possibleMoves = (HashSet<ChessMove>) game.validMoves(position);
             Vector<ChessPosition> endPositions = new Vector<>();
             endPositions.add(position);
@@ -107,7 +109,7 @@ public class GameplayUI extends NotificationHandler{
             System.out.println("Move invalid");
         } else {
             ChessMove move = new ChessMove(new ChessPosition(startRow, startCol), new ChessPosition(endRow, endCol), promotion);
-            facade.makeMove(gameID, move);
+            this.webSocketFacade.makeMove(authData.getAuthToken(), gameID, move);
         }
     }
 

@@ -104,7 +104,10 @@ public class WebSocketHandler {
             gameData = gameService.gameDAO.getGame(gameID);
             String userName = userService.authDAO.checkAuthToken(authToken).getUserName();
             connections.broadcast(gameID, "0", new LoadGameMessage(game));
-            connections.broadcast(gameID, authToken, new NotificationMessage(String.format("%s made %s move", userName, move.toString())));
+            connections.broadcast(gameID, authToken, new NotificationMessage(String.format("%s moved %s", userName, move.toString())));
+            if (game.isGameOver) {
+                connections.broadcast(gameID, "0", new NotificationMessage("Game over"));
+            }
         } catch (InvalidMoveException ex){
             sendErrorMessage(authToken, handleErrors(ex), session);
         }

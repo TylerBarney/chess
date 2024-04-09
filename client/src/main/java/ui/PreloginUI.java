@@ -29,7 +29,7 @@ public class PreloginUI extends NotificationHandler {
                     }
                     AuthData response = facade.register(input[1], input[2], input[3]);
                     System.out.println("You are logged in as: " + response.getUserName());
-                    new PostloginUI(facade);
+                    new PostloginUI(response, facade);
                 } else if (input[0].equalsIgnoreCase("login")) {
                     if (input.length < 3) {
                         System.out.println("Not enough params");
@@ -37,7 +37,7 @@ public class PreloginUI extends NotificationHandler {
                     }
                     AuthData response = facade.login(input[1], input[2]);
                     System.out.println("You are logged in as: " + response.getUserName());
-                    new PostloginUI(facade);
+                    new PostloginUI(response, facade);
                 } else {
                     System.out.println("Invalid command. Type HELP for valid commands");
                 }

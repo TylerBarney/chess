@@ -1,15 +1,19 @@
 package ui;
 
 import chess.ChessGame;
-import model.webSocketMessages.NotificationMessage;
+import model.AuthData;
+import model.GameData;
 
 import java.util.Scanner;
 
 public class PostloginUI extends NotificationHandler {
-    ServerFacade facade;
+    ServerFacade serverFacade;
+    WebSocketFacade webSocketFacade;
     boolean calledList = false;
-    public PostloginUI(ServerFacade facade) throws Exception {
-        this.facade = facade;
+    AuthData authData;
+    public PostloginUI(AuthData authData, ServerFacade serverFacade) throws Exception {
+        this.serverFacade = serverFacade;
+        this.authData = authData;
         System.out.println("[LOGGED_IN] >>> Type HELP to get started.");
         while(true){
             try{
@@ -20,35 +24,37 @@ public class PostloginUI extends NotificationHandler {
                 if (input[0].equalsIgnoreCase("help")){
                     help();
                 } else if (input[0].equalsIgnoreCase("Logout")){
-                    facade.logout();
+                    serverFacade.logout();
                     System.out.println("You are logged out");
                     break;
                 } else if (input[0].equalsIgnoreCase("create")){
                     if (input.length < 2) {System.out.println("Not enough params"); continue;}
-                    String gameID = facade.createGame(input[1]);
+                    String gameID = serverFacade.createGame(input[1]);
                     System.out.println("You created a game with ID: " + gameID);
                 } else if (input[0].equalsIgnoreCase("list")){
                     calledList = true;
-                    System.out.println(facade.listGames().toString());
+                    System.out.println(serverFacade.listGames().toString());
                 } else if (input[0].equalsIgnoreCase("join")){
                     if (!calledList) {System.out.println("Call list first"); continue;}
                     if (input.length < 3) {System.out.println("Not enough params"); continue;}
-                    if (Integer.parseInt(input[1]) < 0 || Integer.parseInt(input[1]) >= facade.gameList.games.length){
+                    if (Integer.parseInt(input[1]) < 0 || Integer.parseInt(input[1]) >= serverFacade.gameList.games.length){
                         System.out.println("Game ID invalid");
                     } else {
                         System.out.println("You are joining gameID: " + input[1] + " as " + input[2] + " player");
-                        new GameplayUI(facade, input);
+                        ChessGame game = serverFacade.joinGame(input[2], serverFacade.getGameID(Integer.parseInt(input[1])));
+                        new GameplayUI(authData, game, webSocketFacade, serverFacade, input);
                         //ChessGame game = facade.joinGame(input[2], Integer.parseInt(input[1]));
 
                     }
                 } else if (input[0].equalsIgnoreCase("observe")){
                     if (!calledList) {System.out.println("Call list first"); continue;}
                     if (input.length < 2) {System.out.println("Not enough params"); continue;}
-                    if (Integer.parseInt(input[1]) < 0 || Integer.parseInt(input[1]) >= facade.gameList.games.length){
+                    if (Integer.parseInt(input[1]) < 0 || Integer.parseInt(input[1]) >= serverFacade.gameList.games.length){
                         System.out.println("Game ID invalid");
                     } else {
-                        System.out.println("You are observing gameID: " + facade.getGameID(Integer.parseInt(input[1])));
-                        new GameplayUI(facade, new String[]{input[0], input[1], null});
+                        System.out.println("You are observing gameID: " + serverFacade.getGameID(Integer.parseInt(input[1])));
+                        ChessGame game = serverFacade.observeGame(serverFacade.getGameID(Integer.parseInt(input[1])));
+                        new GameplayUI(authData, game, webSocketFacade, serverFacade, new String[]{input[0], input[1], null});
                         //ChessGame game = facade.observeGame(Integer.parseInt(input[1]));
 
                     }

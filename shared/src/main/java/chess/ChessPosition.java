@@ -52,9 +52,7 @@ public class ChessPosition {
 
     @Override
     public String toString() {
-        return "ChessPosition{" +
-                "rowPosition=" + rowPosition +
-                ", colPosition=" + colPosition +
-                '}';
+        char row = (char) (rowPosition + 97);
+        return row + "" + colPosition;
     }
 }
