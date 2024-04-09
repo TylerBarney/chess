@@ -128,10 +128,6 @@ public class GamePrinter {
         out.println();
     }
 
-    void setGrey(PrintStream out){
-        out.print(SET_BG_COLOR_LIGHT_GREY);
-        out.print(SET_TEXT_COLOR_LIGHT_GREY);
-    }
 
     void setBlack(PrintStream out){
         out.print(SET_BG_COLOR_BLACK);
