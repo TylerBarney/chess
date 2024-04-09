@@ -21,13 +21,19 @@ public class GameplayUI extends NotificationHandler{
     ServerFacade facade;
     GamePrinter gamePrinter = new GamePrinter();
     String teamColor;
+    int gameID;
     ChessGame game;
 
     public GameplayUI(ServerFacade facade, String[] input) throws Exception {
         this.facade = facade;
-        this.teamColor = input[2];
+        this.teamColor = (input[2] == null) ? "white" : input[2];
         facade.setNotificationHandler(this);
-        game = facade.joinGame(input[2], Integer.parseInt(input[1]));
+        if (input[2] == null){
+            facade.observeGame(facade.getGameID(Integer.parseInt(input[1])));
+        } else {
+            game = facade.joinGame(input[2], facade.getGameID(Integer.parseInt(input[1])));
+        }
+        this.gameID = facade.getGameID(Integer.parseInt(input[1]));
         boolean inGame = true;
 //        if (teamColor.equalsIgnoreCase("white"))
 //            gamePrinter.printBoard("white", new ChessGame(true).getBoard());
@@ -50,6 +56,9 @@ public class GameplayUI extends NotificationHandler{
                         System.out.println("Highlight COLUMN,ROW - legal moves");
                     } else if (input1[0].equalsIgnoreCase("Redraw")){
                         gamePrinter.printBoard(teamColor, game.getBoard());
+                    } else if (input1[0].equalsIgnoreCase("Resign")){
+                        inGame = false;
+                        facade.resign(gameID);
                     }
                 } catch (Exception ex){
                     System.out.println("Error");
@@ -65,14 +74,14 @@ public class GameplayUI extends NotificationHandler{
         GamePrinter gamePrinter = new GamePrinter();
         if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION){
             NotificationMessage notificationMessage = (NotificationMessage) serverMessage;
-            System.out.println(notificationMessage.message);
+            System.out.print(notificationMessage.message+ "\n>>>");
         } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
             LoadGameMessage loadGameMessage = (LoadGameMessage) serverMessage;
             synchronized (System.out) {gamePrinter.printBoard(teamColor, loadGameMessage.getGame().getBoard());}
             game = loadGameMessage.getGame();
         } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR){
             ErrorMessage errorMessage = (ErrorMessage) serverMessage;
-            System.out.println(errorMessage.getErrorMessage());
+            System.out.print(errorMessage.getErrorMessage()+ "\n>>>");
         }
     }
 }

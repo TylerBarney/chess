@@ -46,7 +46,11 @@ public class WebSocketFacade extends Endpoint {
                     }
                 }
             });
-        } catch (Exception ex){
+        } catch (Throwable ex){
+            String getClass = ex.getClass().getName();
+            if (ex.getClass().getName().equals("NumberFormatException")){
+
+            }
             throw ex;
         }
     }
@@ -56,8 +60,12 @@ public class WebSocketFacade extends Endpoint {
 
     public void joinPlayer(String authToken, int gameID, ChessGame.TeamColor playerColor) throws IOException {
         try {
-            var command = new JoinPlayerCommand(authToken, gameID, playerColor);
-            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+            if (playerColor == null){
+                joinObserver(authToken, gameID);
+            } else{
+                var command = new JoinPlayerCommand(authToken, gameID, playerColor);
+                this.session.getBasicRemote().sendText(new Gson().toJson(command));
+            }
         } catch (Exception ex){
             throw ex;
         }
@@ -65,6 +73,14 @@ public class WebSocketFacade extends Endpoint {
     public void joinObserver(String authToken, int gameID) throws IOException {
         try {
             var command = new JoinObserverCommand(authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (Exception ex){
+            throw ex;
+        }
+    }
+    public void resign(String authToken, int gameID) throws IOException{
+        try {
+            var command = new ResignCommand(authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (Exception ex){
             throw ex;

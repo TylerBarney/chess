@@ -57,7 +57,7 @@ public class GameService  {
         if (authDAO.checkAuthToken(authToken) == null){
             throw new DataAccessException("401");
         }
-        if (gameID <= 0) throw new DataAccessException("400");
+        if (gameID < 0) throw new DataAccessException("400");
         if (playerColor == null){
 
         } else if (playerColor.toUpperCase().equals("WHITE")){

@@ -46,8 +46,8 @@ public class PreloginUI extends NotificationHandler {
                 try {
                     int error = Integer.parseInt(exMessage[5]);
                     handleErrors(error);
-                } catch (Exception ex2) {
-                    System.out.println("Error: " + ex.getMessage());
+                } catch (Exception ignored) {
+                    //System.out.println("Error: " + ex.getMessage());
                 }
             }
 

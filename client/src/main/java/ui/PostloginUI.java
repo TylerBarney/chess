@@ -47,8 +47,8 @@ public class PostloginUI extends NotificationHandler {
                     if (Integer.parseInt(input[1]) < 0 || Integer.parseInt(input[1]) >= facade.gameList.games.length){
                         System.out.println("Game ID invalid");
                     } else {
-                        System.out.println("You are observing gameID: " + input[1]);
-                        new GameplayUI(facade, new String[]{input[0], input[1], "white"});
+                        System.out.println("You are observing gameID: " + facade.getGameID(Integer.parseInt(input[1])));
+                        new GameplayUI(facade, new String[]{input[0], input[1], null});
                         //ChessGame game = facade.observeGame(Integer.parseInt(input[1]));
 
                     }

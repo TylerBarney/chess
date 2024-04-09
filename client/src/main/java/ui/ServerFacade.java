@@ -151,14 +151,16 @@ public class ServerFacade {
         http = (HttpURLConnection) uri.toURL().openConnection();
         ws = new WebSocketFacade(String.format("http://localhost:%d", port), notificationHandler);
 
-        //need to fix this so that observe game can be run
-        ws.joinPlayer(authToken, gameID, ChessGame.TeamColor.valueOf(playerColor.toUpperCase()));
+        ws.joinPlayer(authToken, gameID, (playerColor == null) ? null : ChessGame.TeamColor.valueOf(playerColor.toUpperCase()));
         http.setRequestMethod("PUT");
 
         http.setDoOutput(true);
         http.addRequestProperty("Authorization", authToken);
         http.addRequestProperty("Content-Type", "application/json");
         if (playerColor != null) playerColor.toUpperCase();
+        for (int i = 0; i < gameList.games.length; i++) {
+            if (gameList.games[i].gameID == gameID) gameID = i;
+        }
         var body = new JoinRequest(playerColor, gameList.games[gameID].gameID);
         try (OutputStream reqBody = http.getOutputStream()){
             var jsonBody = new Gson().toJson(body);
@@ -178,5 +180,16 @@ public class ServerFacade {
 
     public ChessGame observeGame(int gameID) throws Exception {
         return joinGame(null, gameID);
+    }
+
+    public void resign(int gameID) throws IOException {
+        ws.resign(authToken, gameID);
+    }
+
+    public int getGameID(int listNumber){
+        if (listNumber > -1 && listNumber < gameList.games.length){
+            return gameList.games[listNumber].gameID;
+        }
+        return -1;
     }
 }

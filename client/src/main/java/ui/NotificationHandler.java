@@ -9,10 +9,10 @@ public class NotificationHandler {
     void notify(ServerMessage serverMessage){
         if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION){
             NotificationMessage notificationMessage = (NotificationMessage) serverMessage;
-            System.out.println(notificationMessage.message);
+            System.out.print(notificationMessage.message+ "\n>>>");
         } else if (serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.ERROR){
             ErrorMessage errorMessage = (ErrorMessage) serverMessage;
-            System.out.println(errorMessage.getErrorMessage());
+            System.out.print(errorMessage.getErrorMessage() + "\n>>>");
         }
     }
 }
