@@ -37,14 +37,6 @@ public class ConnectionManager {
     public void remove(int gameID, Connection connection){
 
         connections.get(gameID).remove(connection);
-//        for (Map.Entry<Integer, Vector<Connection>> entry : connections.entrySet()){
-//            Vector<Connection> entryConnections = entry.getValue();
-//            for (var connection : entryConnections){
-//                if (connection.authToken.equals(clientAuth)){
-//                    entry.getValue().remove(connection);
-//                }
-//            }
-//        }
     }
 
     public void broadcast(int gameID, String excludeClient, ServerMessage notification) throws IOException {
