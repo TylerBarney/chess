@@ -14,6 +14,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ConnectionManager {
     public ConcurrentHashMap<Integer, Vector<Connection>> connections = new ConcurrentHashMap<>();
 
+    public ChessGame.TeamColor getColorByAuth(String auth, int gameID){
+        for (var connection : connections.get(gameID)){
+            if (auth.equals(connection.authToken)){
+                return connection.playerColor;
+            }
+        }
+        return null;
+    }
     public void add(int gameID, String authToken, ChessGame.TeamColor playerColor, Session session){
         var connection = new Connection(authToken, playerColor, session);
         if (connections.containsKey(gameID)){

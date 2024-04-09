@@ -64,6 +64,7 @@ public class GameData {
     public ChessGame getGame() {
         return game;
     }
+    public GameData setGame(ChessGame game) {this.game = game; return this;}
 
 
 
